@@ -1,0 +1,49 @@
+{
+  "name": "funnelfit-design-system",
+  "version": "1.0.0",
+  "description": "FunnelFit Design System - Professional SaaS Platform UI",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:visual": "node scripts/visual-testing.js",
+    "test:debug": "playwright test --debug",
+    "test:report": "playwright show-report",
+    "test:mcp": "playwright test mcp-enhanced-tests.spec.ts",
+    "test:mcp:ui": "playwright test mcp-enhanced-tests.spec.ts --ui",
+    "test:all": "playwright test && npm run test:mcp",
+    "test:headless": "playwright test --reporter=line",
+    "test:coverage": "playwright test --reporter=html --reporter=junit"
+  },
+  "dependencies": {
+    "@headlessui/react": "^1.7.17",
+    "@radix-ui/react-slot": "^1.0.2",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "lucide-react": "^0.263.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "tailwind-merge": "^1.14.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "@types/node": "^24.3.0",
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "@vitejs/plugin-react": "^4.0.3",
+    "autoprefixer": "^10.4.14",
+    "eslint": "^8.45.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.3",
+    "postcss": "^8.4.27",
+    "tailwindcss": "^3.3.3",
+    "typescript": "^5.0.2",
+    "vite": "^4.4.5"
+  }
+}
