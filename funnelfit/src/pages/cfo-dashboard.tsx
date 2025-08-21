@@ -154,211 +154,361 @@ const CfoDashboard: React.FC<CfoDashboardProps> = ({
     switch (activeTab) {
       case 'overview':
         return (
-          <div className="space-y-6">
-            {/* Top Key Metrics Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-blue-100 rounded-lg">
-                      <UsersIcon className="h-5 w-5 text-blue-600" />
-                    </div>
+          <div className="space-y-8">
+            {/* Welcome Header */}
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">Welcome back, John</h1>
+                <p className="text-gray-600">Track, manage and forecast your client engagements and revenue.</p>
+              </div>
+              <div className="flex items-center space-x-3">
+                <Button variant="outline" size="sm" className="flex items-center space-x-2">
+                  <span>📅</span>
+                  <span>Select dates</span>
+                </Button>
+                <Button variant="outline" size="sm">
+                  Filters
+                </Button>
+              </div>
+            </div>
+
+            {/* Hero Metrics Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+              {/* Large Revenue Card */}
+              <Card className="lg:col-span-2 border-0 bg-gradient-to-br from-blue-50 to-indigo-50">
+                <CardContent className="p-8">
+                  <div className="flex items-center justify-between mb-4">
                     <div>
-                      <p className="text-xs text-gray-600">Active Clients</p>
-                      <p className="text-xl font-bold text-gray-900">5</p>
+                      <p className="text-sm font-medium text-gray-600 mb-1">Monthly Revenue</p>
+                      <div className="flex items-baseline space-x-2">
+                        <span className="text-4xl font-bold text-gray-900">₦14.25M</span>
+                        <div className="flex items-center space-x-1">
+                          <TrendingUpIcon className="h-4 w-4 text-green-600" />
+                          <span className="text-sm font-semibold text-green-600">+12.5%</span>
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">vs last month</p>
+                    </div>
+                    <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center">
+                      <DollarSignIcon className="h-8 w-8 text-blue-600" />
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-green-100 rounded-lg">
-                      <ClockIcon className="h-5 w-5 text-green-600" />
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-600">This Week</p>
-                      <p className="text-xl font-bold text-gray-900">23/40 hrs</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-yellow-100 rounded-lg">
-                      <DollarSignIcon className="h-5 w-5 text-yellow-600" />
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-600">Pending Approval</p>
-                      <p className="text-xl font-bold text-gray-900">₦4.25M</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-purple-100 rounded-lg">
-                      <TrendingUpIcon className="h-5 w-5 text-purple-600" />
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-600">New Opportunities</p>
-                      <p className="text-xl font-bold text-gray-900">3</p>
+                  
+                  {/* Mini Spark Line */}
+                  <div className="h-16 bg-white bg-opacity-50 rounded-lg flex items-center justify-center">
+                    <div className="flex items-end space-x-1 h-8">
+                      {[20, 35, 25, 45, 30, 55, 40, 65, 50, 70, 60, 75].map((height, index) => (
+                        <div 
+                          key={index} 
+                          className="w-2 bg-blue-500 rounded-sm opacity-70"
+                          style={{ height: `${height}%` }}
+                        />
+                      ))}
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="md:col-span-2 lg:col-span-1">
-                <CardContent className="p-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-indigo-100 rounded-lg">
-                      <StarIcon className="h-5 w-5 text-indigo-600" />
+              {/* Smaller Metric Cards */}
+              <div className="lg:col-span-2 grid grid-cols-2 gap-4">
+                <Card className="border-0 shadow-sm">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="p-2 bg-green-100 rounded-lg">
+                        <UsersIcon className="h-4 w-4 text-green-600" />
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <TrendingUpIcon className="h-3 w-3 text-green-600" />
+                        <span className="text-xs text-green-600 font-medium">+2</span>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-xs text-gray-600">Avg Rating</p>
-                      <p className="text-xl font-bold text-gray-900">4.9</p>
+                    <p className="text-xs text-gray-600 mb-1">Active Clients</p>
+                    <p className="text-2xl font-bold text-gray-900">5</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-0 shadow-sm">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="p-2 bg-blue-100 rounded-lg">
+                        <ClockIcon className="h-4 w-4 text-blue-600" />
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <span className="text-xs text-gray-500">57.5%</span>
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-600 mb-1">This Week</p>
+                    <p className="text-2xl font-bold text-gray-900">23<span className="text-lg text-gray-500">/40</span></p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-0 shadow-sm">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="p-2 bg-amber-100 rounded-lg">
+                        <DollarSignIcon className="h-4 w-4 text-amber-600" />
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <span className="text-xs text-orange-600 font-medium">3 invoices</span>
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-600 mb-1">Pending Approval</p>
+                    <p className="text-2xl font-bold text-gray-900">₦4.25M</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-0 shadow-sm">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="p-2 bg-purple-100 rounded-lg">
+                        <TrendingUpIcon className="h-4 w-4 text-purple-600" />
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <span className="text-xs text-green-600 font-medium">+1 today</span>
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-600 mb-1">New Opportunities</p>
+                    <p className="text-2xl font-bold text-gray-900">3</p>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            {/* Chart and Quick Stats */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Revenue Chart */}
+              <Card className="lg:col-span-2 border-0 shadow-sm">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-lg font-semibold text-gray-900">Revenue Overview</h3>
+                    <div className="flex items-center space-x-2">
+                      <div className="flex bg-gray-100 rounded-lg p-1">
+                        <button className="px-3 py-1 text-xs font-medium bg-white text-gray-900 rounded-md shadow-sm">12M</button>
+                        <button className="px-3 py-1 text-xs font-medium text-gray-600">6M</button>
+                        <button className="px-3 py-1 text-xs font-medium text-gray-600">3M</button>
+                        <button className="px-3 py-1 text-xs font-medium text-gray-600">1M</button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Simple Bar Chart */}
+                  <div className="flex items-end justify-between h-32 mb-4">
+                    {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((month, index) => {
+                      const heights = [60, 75, 45, 80, 65, 90, 70, 85, 60, 95, 75, 88];
+                      return (
+                        <div key={month} className="flex flex-col items-center space-y-2 flex-1">
+                          <div 
+                            className="w-6 bg-blue-500 rounded-t-sm transition-all duration-300 hover:bg-blue-600"
+                            style={{ height: `${heights[index]}%` }}
+                          />
+                          <span className="text-xs text-gray-500">{month}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  
+                  <div className="flex items-center justify-between text-sm text-gray-600">
+                    <span>Peak: December (₦18.2M)</span>
+                    <span>Average: ₦12.8M</span>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Quick Stats */}
+              <Card className="border-0 shadow-sm">
+                <CardContent className="p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Stats</h3>
+                  
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                          <StarIcon className="h-4 w-4 text-yellow-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">Client Rating</p>
+                          <p className="text-xs text-gray-500">Avg satisfaction</p>
+                        </div>
+                      </div>
+                      <span className="text-lg font-bold text-gray-900">4.9</span>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                          <CheckCircleIcon className="h-4 w-4 text-green-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">Completed</p>
+                          <p className="text-xs text-gray-500">This month</p>
+                        </div>
+                      </div>
+                      <span className="text-lg font-bold text-gray-900">12</span>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                          <CalendarIcon className="h-4 w-4 text-blue-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">Utilization</p>
+                          <p className="text-xs text-gray-500">Capacity used</p>
+                        </div>
+                      </div>
+                      <span className="text-lg font-bold text-gray-900">78%</span>
+                    </div>
+
+                    <div className="border-t pt-4">
+                      <Button className="w-full" size="sm">
+                        View Full Analytics
+                      </Button>
                     </div>
                   </div>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Today's Focus */}
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Today's Focus</h3>
-                <div className="space-y-4">
-                  {/* Schedule */}
-                  <div className="flex items-start space-x-3 p-3 bg-blue-50 rounded-lg border-l-4 border-blue-400">
-                    <CalendarIcon className="h-5 w-5 text-blue-600 mt-0.5" />
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">Your Schedule</p>
-                      <p className="text-sm text-gray-600">Next meeting in 2 hours with Client ABC</p>
+            {/* Enhanced Quick Actions */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Card className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-green-100 rounded-lg">
+                      <CheckCircleIcon className="h-5 w-5 text-green-600" />
                     </div>
-                  </div>
-
-                  {/* Due Today */}
-                  <div className="flex items-start space-x-3 p-3 bg-orange-50 rounded-lg border-l-4 border-orange-400">
-                    <ClockIcon className="h-5 w-5 text-orange-600 mt-0.5" />
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">Due Today</p>
-                      <p className="text-sm text-gray-600">2 tasks, 1 timesheet to submit</p>
-                    </div>
-                  </div>
-
-                  {/* New Messages */}
-                  <div className="flex items-start space-x-3 p-3 bg-green-50 rounded-lg border-l-4 border-green-400">
-                    <MessageSquareIcon className="h-5 w-5 text-green-600 mt-0.5" />
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">New Messages</p>
-                      <p className="text-sm text-gray-600">2 unread from clients</p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Quick Actions */}
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  <Button variant="outline" className="flex items-center space-x-2 h-12">
-                    <CheckCircleIcon className="h-4 w-4" />
-                    <span>Submit Timesheet</span>
-                  </Button>
-                  <Button variant="outline" className="flex items-center space-x-2 h-12">
-                    <CalendarIcon className="h-4 w-4" />
-                    <span>View Calendar</span>
-                  </Button>
-                  <Button variant="outline" className="flex items-center space-x-2 h-12">
-                    <TrendingUpIcon className="h-4 w-4" />
-                    <span>View Opportunities</span>
-                  </Button>
-                  <Button variant="outline" className="flex items-center space-x-2 h-12">
-                    <MessageSquareIcon className="h-4 w-4" />
-                    <span>Check Messages</span>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Requires Your Action */}
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Requires Your Action</h3>
-                <div className="space-y-3">
-                  {/* Timesheet Due */}
-                  <div className="flex items-start space-x-3 p-4 bg-red-50 rounded-lg border border-red-200">
-                    <div className="flex-shrink-0 w-2 h-2 bg-red-500 rounded-full mt-2"></div>
                     <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-1">
-                        <span className="text-lg">⚠️</span>
-                        <p className="text-sm font-semibold text-red-900">Timesheet Due</p>
-                        <span className="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Due today</span>
-                      </div>
-                      <p className="text-sm text-red-700">Submit hours for Client XYZ</p>
+                      <p className="font-medium text-gray-900">Submit Timesheet</p>
+                      <p className="text-xs text-orange-600">2 pending submissions</p>
                     </div>
-                    <Button size="sm" className="bg-red-600 hover:bg-red-700">
-                      Submit Now
-                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-blue-100 rounded-lg">
+                      <CalendarIcon className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-900">Schedule Meeting</p>
+                      <p className="text-xs text-blue-600">Next in 2 hours</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-purple-100 rounded-lg">
+                      <TrendingUpIcon className="h-5 w-5 text-purple-600" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-900">View Opportunities</p>
+                      <p className="text-xs text-green-600">3 new matches</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-orange-100 rounded-lg">
+                      <MessageSquareIcon className="h-5 w-5 text-orange-600" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-900">Check Messages</p>
+                      <p className="text-xs text-orange-600">2 unread</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Recent Activity & Requires Action */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Recent Activity */}
+              <Card className="border-0 shadow-sm">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-gray-900">Recent Activity</h3>
+                    <Button variant="outline" size="sm">View all</Button>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    {[
+                      { name: 'TechStart Solutions', action: 'Q4 Review completed', time: '2 hours ago', avatar: 'TS', color: 'bg-blue-500' },
+                      { name: 'Green Earth Co.', action: 'Invoice approved ₦2.1M', time: '4 hours ago', avatar: 'GE', color: 'bg-green-500' },
+                      { name: 'MedFlow Inc.', action: 'New document uploaded', time: '6 hours ago', avatar: 'MF', color: 'bg-purple-500' },
+                      { name: 'DataCorp Ltd.', action: 'Meeting scheduled for Dec 20', time: '1 day ago', avatar: 'DC', color: 'bg-orange-500' }
+                    ].map((activity, index) => (
+                      <div key={index} className="flex items-center space-x-3">
+                        <div className={`w-8 h-8 ${activity.color} rounded-full flex items-center justify-center text-white text-xs font-semibold`}>
+                          {activity.avatar}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900">{activity.name}</p>
+                          <p className="text-xs text-gray-600">{activity.action}</p>
+                        </div>
+                        <span className="text-xs text-gray-500">{activity.time}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Requires Your Action */}
+              <Card className="border-0 shadow-sm">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-gray-900">Requires Your Action</h3>
+                    <span className="px-2 py-1 bg-red-100 text-red-800 text-xs font-semibold rounded-full">4 items</span>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-start space-x-3 p-3 border border-red-200 bg-red-50 rounded-lg">
+                      <div className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center space-x-2 mb-1">
+                          <p className="text-sm font-semibold text-red-900">Timesheet Due</p>
+                          <span className="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Today</span>
+                        </div>
+                        <p className="text-xs text-red-700">Client XYZ - Submit 8 hours</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start space-x-3 p-3 border border-orange-200 bg-orange-50 rounded-lg">
+                      <div className="w-2 h-2 bg-orange-500 rounded-full mt-2 flex-shrink-0"></div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center space-x-2 mb-1">
+                          <p className="text-sm font-semibold text-orange-900">Chemistry Call</p>
+                          <span className="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full">2 days</span>
+                        </div>
+                        <p className="text-xs text-orange-700">Tech Startup - Schedule call</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start space-x-3 p-3 border border-yellow-200 bg-yellow-50 rounded-lg">
+                      <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2 flex-shrink-0"></div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center space-x-2 mb-1">
+                          <p className="text-sm font-semibold text-yellow-900">Document Review</p>
+                          <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Pending</span>
+                        </div>
+                        <p className="text-xs text-yellow-700">Client ABC - Financial model</p>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Chemistry Call Request */}
-                  <div className="flex items-start space-x-3 p-4 bg-orange-50 rounded-lg border border-orange-200">
-                    <div className="flex-shrink-0 w-2 h-2 bg-orange-500 rounded-full mt-2"></div>
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-1">
-                        <span className="text-lg">🔔</span>
-                        <p className="text-sm font-semibold text-orange-900">Chemistry Call Request</p>
-                        <span className="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full">2 days old</span>
-                      </div>
-                      <p className="text-sm text-orange-700">Tech Startup wants to schedule</p>
-                    </div>
-                    <Button size="sm" variant="outline" className="border-orange-300 text-orange-700 hover:bg-orange-100">
-                      Respond
-                    </Button>
-                  </div>
-
-                  {/* Document Review */}
-                  <div className="flex items-start space-x-3 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-                    <div className="flex-shrink-0 w-2 h-2 bg-yellow-500 rounded-full mt-2"></div>
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-1">
-                        <span className="text-lg">📋</span>
-                        <p className="text-sm font-semibold text-yellow-900">Document Review</p>
-                        <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Pending</span>
-                      </div>
-                      <p className="text-sm text-yellow-700">Client ABC awaiting feedback on financial model</p>
-                    </div>
-                    <Button size="sm" variant="outline" className="border-yellow-300 text-yellow-700 hover:bg-yellow-100">
-                      Review
-                    </Button>
-                  </div>
-
-                  {/* Expiring Opportunity */}
-                  <div className="flex items-start space-x-3 p-4 bg-red-50 rounded-lg border border-red-200">
-                    <div className="flex-shrink-0 w-2 h-2 bg-red-500 rounded-full mt-2"></div>
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-1">
-                        <span className="text-lg">⏰</span>
-                        <p className="text-sm font-semibold text-red-900">Expiring Opportunity</p>
-                        <span className="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Expires in 24 hrs</span>
-                      </div>
-                      <p className="text-sm text-red-700">Respond to match request</p>
-                    </div>
-                    <Button size="sm" className="bg-red-600 hover:bg-red-700">
-                      Respond Now
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                  <Button className="w-full mt-4" size="sm">
+                    View All Actions
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         )
 
