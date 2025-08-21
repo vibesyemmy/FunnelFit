@@ -21,6 +21,19 @@ import {
   UserIcon,
   CheckCircleIcon
 } from 'lucide-react'
+import {
+  dashboardMetrics,
+  clients,
+  recentActivities,
+  actionItems,
+  revenueData,
+  formatCurrency,
+  getPriorityColor,
+  getClientsByStatus,
+  type Client,
+  type Activity,
+  type ActionItem
+} from '../data/dashboard-data'
 
 type Page = 'sign-in' | 'sign-up' | 'create-account' | 'email-verification' | 'verification-success' | 'onboarding' | 'onboarding-success' | 'sme-dashboard' | 'sme-main-dashboard' | 'upload-center' | 'bank-connection' | 'enhanced-upload' | 'cfo-dashboard'
 
@@ -37,48 +50,8 @@ const CfoDashboard: React.FC<CfoDashboardProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState('overview')
 
-  // Mock data for CFO dashboard
-  const mockData = {
-    activeClients: 6,
-    monthlyRevenue: 14250000,
-    utilizationRate: 87,
-    avgClientSatisfaction: 4.8,
-    pendingTasks: 12,
-    upcomingMeetings: 3
-  }
-
-  const activeEngagements = [
-    {
-      id: 1,
-      clientName: "TechStart Solutions",
-      industry: "Technology",
-      type: "Monthly Retainer",
-      status: "active",
-      nextDeadline: "Dec 15, 2024",
-      progress: 75,
-      priority: "high"
-    },
-    {
-      id: 2,
-      clientName: "Green Earth Co.",
-      industry: "Sustainability",
-      type: "Project-Based",
-      status: "active",
-      nextDeadline: "Dec 20, 2024",
-      progress: 45,
-      priority: "medium"
-    },
-    {
-      id: 3,
-      clientName: "Retail Plus",
-      industry: "Retail",
-      type: "Hourly",
-      status: "pending_review",
-      nextDeadline: "Dec 12, 2024",
-      progress: 90,
-      priority: "low"
-    }
-  ]
+  // Get active clients for engagement display
+  const activeEngagements = getClientsByStatus('active')
 
   const navigationItems = [
     {
@@ -125,30 +98,7 @@ const CfoDashboard: React.FC<CfoDashboardProps> = ({
     }
   ]
 
-  const recentActivities = [
-    { action: "Completed Q3 financial analysis", client: "TechStart Solutions", time: "2 hours ago" },
-    { action: "Scheduled meeting with CFO", client: "Green Earth Co.", time: "4 hours ago" },
-    { action: "Submitted budget forecast", client: "Retail Plus", time: "1 day ago" },
-    { action: "Received payment", client: "TechStart Solutions", time: "2 days ago" }
-  ]
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return 'text-green-600 bg-green-50'
-      case 'pending_review': return 'text-yellow-600 bg-yellow-50'
-      case 'completed': return 'text-blue-600 bg-blue-50'
-      default: return 'text-gray-600 bg-gray-50'
-    }
-  }
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'border-l-red-500'
-      case 'medium': return 'border-l-yellow-500'
-      case 'low': return 'border-l-green-500'
-      default: return 'border-l-gray-500'
-    }
-  }
 
   const getModuleContent = () => {
     switch (activeTab) {
@@ -181,10 +131,10 @@ const CfoDashboard: React.FC<CfoDashboardProps> = ({
                     <div>
                       <p className="text-sm font-medium text-gray-600 mb-1">Monthly Revenue</p>
                       <div className="flex items-baseline space-x-2">
-                        <span className="text-4xl font-bold text-gray-900">₦14.25M</span>
+                        <span className="text-4xl font-bold text-gray-900">{formatCurrency(dashboardMetrics.monthlyRevenue.current)}</span>
                         <div className="flex items-center space-x-1">
                           <TrendingUpIcon className="h-4 w-4 text-green-600" />
-                          <span className="text-sm font-semibold text-green-600">+12.5%</span>
+                          <span className="text-sm font-semibold text-green-600">+{dashboardMetrics.monthlyRevenue.growth}%</span>
                         </div>
                       </div>
                       <p className="text-xs text-gray-500 mt-1">vs last month</p>
@@ -219,11 +169,11 @@ const CfoDashboard: React.FC<CfoDashboardProps> = ({
                       </div>
                       <div className="flex items-center space-x-1">
                         <TrendingUpIcon className="h-3 w-3 text-green-600" />
-                        <span className="text-xs text-green-600 font-medium">+2</span>
+                        <span className="text-xs text-green-600 font-medium">+{dashboardMetrics.activeClients.change}</span>
                       </div>
                     </div>
                     <p className="text-xs text-gray-600 mb-1">Active Clients</p>
-                    <p className="text-2xl font-bold text-gray-900">5</p>
+                    <p className="text-2xl font-bold text-gray-900">{dashboardMetrics.activeClients.count}</p>
                   </CardContent>
                 </Card>
 
@@ -234,11 +184,11 @@ const CfoDashboard: React.FC<CfoDashboardProps> = ({
                         <ClockIcon className="h-4 w-4 text-blue-600" />
                       </div>
                       <div className="flex items-center space-x-1">
-                        <span className="text-xs text-gray-500">57.5%</span>
+                        <span className="text-xs text-gray-500">{dashboardMetrics.weeklyHours.utilization}%</span>
                       </div>
                     </div>
                     <p className="text-xs text-gray-600 mb-1">This Week</p>
-                    <p className="text-2xl font-bold text-gray-900">23<span className="text-lg text-gray-500">/40</span></p>
+                    <p className="text-2xl font-bold text-gray-900">{dashboardMetrics.weeklyHours.logged}<span className="text-lg text-gray-500">/{dashboardMetrics.weeklyHours.capacity}</span></p>
                   </CardContent>
                 </Card>
 
@@ -249,11 +199,11 @@ const CfoDashboard: React.FC<CfoDashboardProps> = ({
                         <DollarSignIcon className="h-4 w-4 text-amber-600" />
                       </div>
                       <div className="flex items-center space-x-1">
-                        <span className="text-xs text-orange-600 font-medium">3 invoices</span>
+                        <span className="text-xs text-orange-600 font-medium">{dashboardMetrics.pendingApproval.invoiceCount} invoices</span>
                       </div>
                     </div>
                     <p className="text-xs text-gray-600 mb-1">Pending Approval</p>
-                    <p className="text-2xl font-bold text-gray-900">₦4.25M</p>
+                    <p className="text-2xl font-bold text-gray-900">{formatCurrency(dashboardMetrics.pendingApproval.amount)}</p>
                   </CardContent>
                 </Card>
 
@@ -264,11 +214,11 @@ const CfoDashboard: React.FC<CfoDashboardProps> = ({
                         <TrendingUpIcon className="h-4 w-4 text-purple-600" />
                       </div>
                       <div className="flex items-center space-x-1">
-                        <span className="text-xs text-green-600 font-medium">+1 today</span>
+                        <span className="text-xs text-green-600 font-medium">+{dashboardMetrics.newOpportunities.todayCount} today</span>
                       </div>
                     </div>
                     <p className="text-xs text-gray-600 mb-1">New Opportunities</p>
-                    <p className="text-2xl font-bold text-gray-900">3</p>
+                    <p className="text-2xl font-bold text-gray-900">{dashboardMetrics.newOpportunities.count}</p>
                   </CardContent>
                 </Card>
               </div>
@@ -293,23 +243,25 @@ const CfoDashboard: React.FC<CfoDashboardProps> = ({
                   
                   {/* Simple Bar Chart */}
                   <div className="flex items-end justify-between h-32 mb-4">
-                    {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((month, index) => {
-                      const heights = [60, 75, 45, 80, 65, 90, 70, 85, 60, 95, 75, 88];
+                    {revenueData.map((data, index) => {
+                      const maxRevenue = Math.max(...revenueData.map(d => d.revenue));
+                      const height = (data.revenue / maxRevenue) * 100;
                       return (
-                        <div key={month} className="flex flex-col items-center space-y-2 flex-1">
+                        <div key={data.month} className="flex flex-col items-center space-y-2 flex-1">
                           <div 
                             className="w-6 bg-blue-500 rounded-t-sm transition-all duration-300 hover:bg-blue-600"
-                            style={{ height: `${heights[index]}%` }}
+                            style={{ height: `${height}%` }}
+                            title={`${data.month}: ${formatCurrency(data.revenue)}`}
                           />
-                          <span className="text-xs text-gray-500">{month}</span>
+                          <span className="text-xs text-gray-500">{data.month}</span>
                         </div>
                       );
                     })}
                   </div>
                   
                   <div className="flex items-center justify-between text-sm text-gray-600">
-                    <span>Peak: December (₦18.2M)</span>
-                    <span>Average: ₦12.8M</span>
+                    <span>Peak: {revenueData.reduce((max, curr) => curr.revenue > max.revenue ? curr : max).month} ({formatCurrency(Math.max(...revenueData.map(d => d.revenue)))})</span>
+                    <span>Average: {formatCurrency(revenueData.reduce((sum, d) => sum + d.revenue, 0) / revenueData.length)}</span>
                   </div>
                 </CardContent>
               </Card>
@@ -330,7 +282,7 @@ const CfoDashboard: React.FC<CfoDashboardProps> = ({
                           <p className="text-xs text-gray-500">Avg satisfaction</p>
                         </div>
                       </div>
-                      <span className="text-lg font-bold text-gray-900">4.9</span>
+                      <span className="text-lg font-bold text-gray-900">{dashboardMetrics.clientRating.average}</span>
                     </div>
 
                     <div className="flex items-center justify-between">
@@ -343,7 +295,7 @@ const CfoDashboard: React.FC<CfoDashboardProps> = ({
                           <p className="text-xs text-gray-500">This month</p>
                         </div>
                       </div>
-                      <span className="text-lg font-bold text-gray-900">12</span>
+                      <span className="text-lg font-bold text-gray-900">{dashboardMetrics.completedProjects.thisMonth}</span>
                     </div>
 
                     <div className="flex items-center justify-between">
@@ -356,7 +308,7 @@ const CfoDashboard: React.FC<CfoDashboardProps> = ({
                           <p className="text-xs text-gray-500">Capacity used</p>
                         </div>
                       </div>
-                      <span className="text-lg font-bold text-gray-900">78%</span>
+                      <span className="text-lg font-bold text-gray-900">{dashboardMetrics.weeklyHours.utilization}%</span>
                     </div>
 
                     <div className="border-t pt-4">
@@ -439,21 +391,16 @@ const CfoDashboard: React.FC<CfoDashboardProps> = ({
                   </div>
                   
                   <div className="space-y-4">
-                    {[
-                      { name: 'TechStart Solutions', action: 'Q4 Review completed', time: '2 hours ago', avatar: 'TS', color: 'bg-blue-500' },
-                      { name: 'Green Earth Co.', action: 'Invoice approved ₦2.1M', time: '4 hours ago', avatar: 'GE', color: 'bg-green-500' },
-                      { name: 'MedFlow Inc.', action: 'New document uploaded', time: '6 hours ago', avatar: 'MF', color: 'bg-purple-500' },
-                      { name: 'DataCorp Ltd.', action: 'Meeting scheduled for Dec 20', time: '1 day ago', avatar: 'DC', color: 'bg-orange-500' }
-                    ].map((activity, index) => (
-                      <div key={index} className="flex items-center space-x-3">
-                        <div className={`w-8 h-8 ${activity.color} rounded-full flex items-center justify-center text-white text-xs font-semibold`}>
-                          {activity.avatar}
+                    {recentActivities.map((activity) => (
+                      <div key={activity.id} className="flex items-center space-x-3">
+                        <div className={`w-8 h-8 ${activity.clientColor} rounded-full flex items-center justify-center text-white text-xs font-semibold`}>
+                          {activity.clientAvatar}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900">{activity.name}</p>
+                          <p className="text-sm font-medium text-gray-900">{activity.clientName}</p>
                           <p className="text-xs text-gray-600">{activity.action}</p>
                         </div>
-                        <span className="text-xs text-gray-500">{activity.time}</span>
+                        <span className="text-xs text-gray-500">{activity.timestamp}</span>
                       </div>
                     ))}
                   </div>
@@ -465,42 +412,22 @@ const CfoDashboard: React.FC<CfoDashboardProps> = ({
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-semibold text-gray-900">Requires Your Action</h3>
-                    <span className="px-2 py-1 bg-red-100 text-red-800 text-xs font-semibold rounded-full">4 items</span>
+                    <span className="px-2 py-1 bg-red-100 text-red-800 text-xs font-semibold rounded-full">{actionItems.length} items</span>
                   </div>
                   
                   <div className="space-y-3">
-                    <div className="flex items-start space-x-3 p-3 border border-red-200 bg-red-50 rounded-lg">
-                      <div className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center space-x-2 mb-1">
-                          <p className="text-sm font-semibold text-red-900">Timesheet Due</p>
-                          <span className="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Today</span>
+                    {actionItems.slice(0, 3).map((item) => (
+                      <div key={item.id} className={`flex items-start space-x-3 p-3 rounded-lg ${getPriorityColor(item.priority)}`}>
+                        <div className={`w-2 h-2 ${item.priority === 'urgent' ? 'bg-red-500' : item.priority === 'high' ? 'bg-orange-500' : 'bg-yellow-500'} rounded-full mt-2 flex-shrink-0`}></div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center space-x-2 mb-1">
+                            <p className="text-sm font-semibold">{item.title}</p>
+                            <span className={`px-2 py-1 text-xs rounded-full ${item.priority === 'urgent' ? 'bg-red-100 text-red-800' : item.priority === 'high' ? 'bg-orange-100 text-orange-800' : 'bg-yellow-100 text-yellow-800'}`}>{item.dueDate}</span>
+                          </div>
+                          <p className="text-xs">{item.description}</p>
                         </div>
-                        <p className="text-xs text-red-700">Client XYZ - Submit 8 hours</p>
                       </div>
-                    </div>
-
-                    <div className="flex items-start space-x-3 p-3 border border-orange-200 bg-orange-50 rounded-lg">
-                      <div className="w-2 h-2 bg-orange-500 rounded-full mt-2 flex-shrink-0"></div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center space-x-2 mb-1">
-                          <p className="text-sm font-semibold text-orange-900">Chemistry Call</p>
-                          <span className="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full">2 days</span>
-                        </div>
-                        <p className="text-xs text-orange-700">Tech Startup - Schedule call</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start space-x-3 p-3 border border-yellow-200 bg-yellow-50 rounded-lg">
-                      <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2 flex-shrink-0"></div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center space-x-2 mb-1">
-                          <p className="text-sm font-semibold text-yellow-900">Document Review</p>
-                          <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Pending</span>
-                        </div>
-                        <p className="text-xs text-yellow-700">Client ABC - Financial model</p>
-                      </div>
-                    </div>
+                    ))}
                   </div>
 
                   <Button className="w-full mt-4" size="sm">
@@ -626,19 +553,19 @@ const CfoDashboard: React.FC<CfoDashboardProps> = ({
                 </CardContent>
               </Card>
               
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-green-100 rounded-lg">
-                      <DollarSignIcon className="h-6 w-6 text-green-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Monthly Revenue</p>
-                      <p className="text-2xl font-bold text-gray-900">₦14,250,000</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                               <Card>
+                   <CardContent className="p-6">
+                     <div className="flex items-center space-x-3">
+                       <div className="p-2 bg-green-100 rounded-lg">
+                         <DollarSignIcon className="h-6 w-6 text-green-600" />
+                       </div>
+                       <div>
+                         <p className="text-sm text-gray-600">Monthly Revenue</p>
+                         <p className="text-2xl font-bold text-gray-900">{formatCurrency(dashboardMetrics.monthlyRevenue.current)}</p>
+                       </div>
+                     </div>
+                   </CardContent>
+                 </Card>
               
               <Card>
                 <CardContent className="p-6">
