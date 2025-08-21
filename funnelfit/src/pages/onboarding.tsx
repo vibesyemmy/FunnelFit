@@ -42,8 +42,6 @@ const OnboardingPage: React.FC<OnboardingPageProps> = ({
     cfoSupportAreas: [] as string[],
     additionalRequirements: '',
     // CFO Professional Background
-    firstName: '',
-    lastName: '',
     certifications: [] as string[],
     certificationFiles: {} as Record<string, File | null>,
     customCertificationName: '',

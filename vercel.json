@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "buildCommand": "cd funnelfit && npm run build",
+  "outputDirectory": "funnelfit/dist",
+  "installCommand": "cd funnelfit && npm install",
+  "framework": null,
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

@@ -22,8 +22,10 @@ import {
   CheckCircleIcon
 } from 'lucide-react'
 
+type Page = 'sign-in' | 'sign-up' | 'create-account' | 'email-verification' | 'verification-success' | 'onboarding' | 'onboarding-success' | 'sme-dashboard' | 'sme-main-dashboard' | 'upload-center' | 'bank-connection' | 'enhanced-upload' | 'cfo-dashboard'
+
 interface CfoDashboardProps {
-  onNavigate: (page: string, accountType?: 'sme' | 'cfo', email?: string) => void
+  onNavigate: (page: Page, accountType?: 'sme' | 'cfo', email?: string) => void
   accountType: 'sme' | 'cfo'
   email: string
 }
