@@ -40,3 +40,4 @@ try {
   console.error('❌ Visual testing failed:', error.message);
   process.exit(1);
 }
+

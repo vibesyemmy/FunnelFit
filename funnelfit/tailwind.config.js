@@ -18,7 +18,7 @@ export default {
           300: '#e0cec7',
           400: '#d2bab0',
           500: '#9E7B64', // Your specified primary color
-          600: '#8f6a55',
+          600: '#7D4F30', // Updated to darker brown
           700: '#7a5a47',
           800: '#6a4c3d',
           900: '#5a3e33',

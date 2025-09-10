@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Button, Card, CardContent, Input, Select } from '../components/ui'
+import CFOSidebar from '../components/CFOSidebar'
 import { 
   UserIcon,
   BriefcaseIcon,
@@ -18,16 +19,18 @@ import {
   XIcon
 } from 'lucide-react'
 
+type Page = 'sign-in' | 'sign-up' | 'create-account' | 'email-verification' | 'verification-success' | 'onboarding' | 'onboarding-success' | 'sme-dashboard' | 'sme-main-dashboard' | 'upload-center' | 'bank-connection' | 'enhanced-upload' | 'cfo-dashboard' | 'cfo-client-management' | 'cfo-client-workspace' | 'projects-tasks' | 'invoice-tracking' | 'cfo-profile-management'
+
 interface CfoProfileManagementProps {
-  onNavigate: (page: string, accountType?: 'sme' | 'cfo', email?: string) => void
+  onNavigate: (page: Page, accountType?: 'sme' | 'cfo', email?: string) => void
   accountType: 'sme' | 'cfo'
   email: string
 }
 
 const CfoProfileManagement: React.FC<CfoProfileManagementProps> = ({ 
-  onNavigate, 
-  accountType, 
-  email 
+  onNavigate,
+  accountType,
+  email
 }) => {
   const [activeSection, setActiveSection] = useState('overview')
   const [isEditing, setIsEditing] = useState(false)
@@ -41,11 +44,17 @@ const CfoProfileManagement: React.FC<CfoProfileManagementProps> = ({
     
     // Professional Background
     certifications: ['CPA', 'CFA', 'MBA'],
+    certificationFiles: {} as Record<string, File | null>,
+    customCertificationName: '',
     education: 'MBA Finance - Wharton School, BS Accounting - NYU',
+    resumeFile: null as File | null,
     linkedinUrl: 'https://linkedin.com/in/johndoe',
     
     // Experience & Expertise
     yearsOfExperience: '15+',
+    experienceLevel: '15+ years',
+    industriesWorked: ['Technology', 'Healthcare', 'Finance'],
+    companySizeExperience: 'Mid-market (₦5B-50B revenue)',
     previousRoles: [
       'CFO at TechStart Inc. (2018-2023)',
       'VP Finance at HealthCorp (2015-2018)',
@@ -76,12 +85,19 @@ const CfoProfileManagement: React.FC<CfoProfileManagementProps> = ({
     
     // Availability & Pricing
     weeklyCapacity: '20-30 hours',
+    availability: 'Weekdays after work',
+    preferredHours: '9 AM - 6 PM EST',
     preferredEngagementLength: '6-12 months',
     timeZone: 'EST',
     workingHours: '9 AM - 6 PM EST',
     hourlyRate: '₦75,000-100,000',
     retainerRange: '₦4,000,000-7,500,000',
     projectBasedRate: 'Varies by scope',
+    
+    // Work Expectations
+    preferredEngagementModel: 'Fractional CFO',
+    rateExpectations: '₦75,000-100,000 per hour',
+    additionalPreferences: 'Prefer long-term engagements with growth-stage companies',
     
     // Client Preferences
     preferredClientSize: 'Mid-market (₦5B-50B revenue)',
@@ -101,17 +117,16 @@ const CfoProfileManagement: React.FC<CfoProfileManagementProps> = ({
 
   const profileSections = [
     { id: 'overview', name: 'Profile Overview', icon: <UserIcon className="h-5 w-5" /> },
-    { id: 'professional', name: 'Professional Background', icon: <BriefcaseIcon className="h-5 w-5" /> },
-    { id: 'expertise', name: 'Areas of Expertise', icon: <StarIcon className="h-5 w-5" /> },
-    { id: 'availability', name: 'Availability & Pricing', icon: <ClockIcon className="h-5 w-5" /> },
-    { id: 'verification', name: 'Verification Status', icon: <CheckCircleIcon className="h-5 w-5" /> }
+    { id: 'professional-expertise', name: 'Professional Background & Expertise', icon: <BriefcaseIcon className="h-5 w-5" /> },
+    { id: 'availability-preferences', name: 'Availability & Work Preferences', icon: <ClockIcon className="h-5 w-5" /> },
+    { id: 'documents-verification', name: 'Documents & Verification', icon: <FileTextIcon className="h-5 w-5" /> }
   ]
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: keyof typeof profileData, value: any) => {
     setProfileData(prev => ({ ...prev, [field]: value }))
   }
 
-  const handleArrayAdd = (field: string, value: string) => {
+  const handleArrayAdd = (field: keyof typeof profileData, value: string) => {
     if (!value.trim()) return
     
     setProfileData(prev => ({
@@ -120,7 +135,7 @@ const CfoProfileManagement: React.FC<CfoProfileManagementProps> = ({
     }))
   }
 
-  const handleArrayRemove = (field: string, index: number) => {
+  const handleArrayRemove = (field: keyof typeof profileData, index: number) => {
     setProfileData(prev => ({
       ...prev,
       [field]: (prev[field] as string[]).filter((_, i) => i !== index)
@@ -466,8 +481,44 @@ const CfoProfileManagement: React.FC<CfoProfileManagementProps> = ({
       {/* Availability */}
       <Card>
         <CardContent className="p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Availability</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Availability & Capacity</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Current Availability</label>
+              {isEditing ? (
+                <select
+                  value={profileData.availability}
+                  onChange={(e) => handleInputChange('availability', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                >
+                  <option value="">Select availability</option>
+                  <option value="immediately">Available Immediately</option>
+                  <option value="1-2-weeks">Available in 1-2 weeks</option>
+                  <option value="1-month">Available in 1 month</option>
+                  <option value="not-available">Not Currently Available</option>
+                </select>
+              ) : (
+                <p className="text-gray-900">{profileData.availability}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Preferred Hours per Week</label>
+              {isEditing ? (
+                <select
+                  value={profileData.preferredHours}
+                  onChange={(e) => handleInputChange('preferredHours', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                >
+                  <option value="">Select hours</option>
+                  <option value="10-20">10-20 hours</option>
+                  <option value="20-30">20-30 hours</option>
+                  <option value="30-40">30-40 hours</option>
+                  <option value="40+">40+ hours</option>
+                </select>
+              ) : (
+                <p className="text-gray-900">{profileData.preferredHours}</p>
+              )}
+            </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Weekly Capacity</label>
               {isEditing ? (
@@ -491,6 +542,24 @@ const CfoProfileManagement: React.FC<CfoProfileManagementProps> = ({
               )}
             </div>
             <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Preferred Engagement Model</label>
+              {isEditing ? (
+                <select
+                  value={profileData.preferredEngagementModel}
+                  onChange={(e) => handleInputChange('preferredEngagementModel', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                >
+                  <option value="">Select model</option>
+                  <option value="project-based">Project-based</option>
+                  <option value="ongoing-retainer">Ongoing Retainer</option>
+                  <option value="hourly-consulting">Hourly Consulting</option>
+                  <option value="interim-cfo">Interim CFO</option>
+                </select>
+              ) : (
+                <p className="text-gray-900">{profileData.preferredEngagementModel}</p>
+              )}
+            </div>
+            <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Time Zone</label>
               {isEditing ? (
                 <Input
@@ -510,6 +579,18 @@ const CfoProfileManagement: React.FC<CfoProfileManagementProps> = ({
                 />
               ) : (
                 <p className="text-gray-900">{profileData.workingHours}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Rate Expectations</label>
+              {isEditing ? (
+                <Input
+                  value={profileData.rateExpectations}
+                  onChange={(e) => handleInputChange('rateExpectations', e.target.value)}
+                  placeholder="e.g., $150-200/hour"
+                />
+              ) : (
+                <p className="text-gray-900">{profileData.rateExpectations}</p>
               )}
             </div>
           </div>
@@ -624,13 +705,20 @@ const CfoProfileManagement: React.FC<CfoProfileManagementProps> = ({
               <p className="font-medium text-gray-900">Public Profile</p>
               <p className="text-sm text-gray-600">Allow SMEs to view your profile for matching</p>
             </div>
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                checked={profileData.isPublicProfile}
-                onChange={(e) => handleInputChange('isPublicProfile', e.target.checked)}
-                className="mr-2"
-              />
+            <div className="flex items-center space-x-3">
+              <button
+                type="button"
+                onClick={() => handleInputChange('isPublicProfile', !profileData.isPublicProfile)}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 ${
+                  profileData.isPublicProfile ? 'bg-primary-600' : 'bg-gray-200'
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    profileData.isPublicProfile ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
+              </button>
               <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                 profileData.isPublicProfile ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
               }`}>
@@ -643,48 +731,244 @@ const CfoProfileManagement: React.FC<CfoProfileManagementProps> = ({
     </div>
   )
 
+  const renderWorkPreferencesSection = () => (
+    <Card>
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-lg font-semibold text-gray-900">Work Preferences</h3>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsEditing(!isEditing)}
+          >
+            {isEditing ? <SaveIcon className="w-4 h-4 mr-2" /> : <EditIcon className="w-4 h-4 mr-2" />}
+            {isEditing ? 'Save' : 'Edit'}
+          </Button>
+        </div>
+
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Engagement Model</label>
+            {isEditing ? (
+              <select
+                value={profileData.preferredEngagementModel}
+                onChange={(e) => handleInputChange('preferredEngagementModel', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              >
+                <option value="Fractional CFO">Fractional CFO</option>
+                <option value="Project-based">Project-based</option>
+                <option value="Consultation">Consultation</option>
+                <option value="Interim CFO">Interim CFO</option>
+              </select>
+            ) : (
+              <p className="text-gray-900">{profileData.preferredEngagementModel}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Rate Expectations</label>
+            {isEditing ? (
+              <Input
+                value={profileData.rateExpectations}
+                onChange={(e) => handleInputChange('rateExpectations', e.target.value)}
+                placeholder="e.g., ₦75,000-100,000 per hour"
+              />
+            ) : (
+              <p className="text-gray-900">{profileData.rateExpectations}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Additional Preferences</label>
+            {isEditing ? (
+              <textarea
+                value={profileData.additionalPreferences}
+                onChange={(e) => handleInputChange('additionalPreferences', e.target.value)}
+                placeholder="Share your working style preferences, ideal client types, etc."
+                rows={3}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              />
+            ) : (
+              <p className="text-gray-900">{profileData.additionalPreferences}</p>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+
+  const renderDocumentManagementSection = () => (
+    <Card>
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-lg font-semibold text-gray-900">Document Management</h3>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsEditing(!isEditing)}
+          >
+            {isEditing ? <SaveIcon className="w-4 h-4 mr-2" /> : <EditIcon className="w-4 h-4 mr-2" />}
+            {isEditing ? 'Save' : 'Edit'}
+          </Button>
+        </div>
+
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Resume/CV</label>
+            {isEditing ? (
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                <FileTextIcon className="mx-auto h-12 w-12 text-gray-400" />
+                <div className="mt-4">
+                  <label htmlFor="resume-upload" className="cursor-pointer">
+                    <span className="mt-2 block text-sm font-medium text-gray-900">
+                      {profileData.resumeFile ? profileData.resumeFile.name : 'Upload Resume/CV'}
+                    </span>
+                    <input
+                      id="resume-upload"
+                      type="file"
+                      className="hidden"
+                      accept=".pdf,.doc,.docx"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0] || null
+                        handleInputChange('resumeFile', file)
+                      }}
+                    />
+                  </label>
+                  <p className="mt-1 text-xs text-gray-500">PDF, DOC, DOCX up to 10MB</p>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-3">
+                <FileTextIcon className="h-5 w-5 text-gray-400" />
+                <span className="text-gray-900">
+                  {profileData.resumeFile ? profileData.resumeFile.name : 'No resume uploaded'}
+                </span>
+              </div>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Certification Documents</label>
+            <div className="space-y-3">
+              {profileData.certifications.map((cert, index) => (
+                <div key={index} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <FileTextIcon className="h-5 w-5 text-gray-400" />
+                    <span className="text-gray-900">{cert}</span>
+                  </div>
+                  {isEditing && (
+                    <div className="flex items-center space-x-2">
+                      <label htmlFor={`cert-${index}`} className="cursor-pointer">
+                        <Button variant="outline" size="sm">
+                          {profileData.certificationFiles[cert] ? 'Replace' : 'Upload'}
+                        </Button>
+                        <input
+                          id={`cert-${index}`}
+                          type="file"
+                          className="hidden"
+                          accept=".pdf,.jpg,.jpeg,.png"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0] || null
+                            const newFiles = { ...profileData.certificationFiles }
+                            newFiles[cert] = file
+                            handleInputChange('certificationFiles', newFiles)
+                          }}
+                        />
+                      </label>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+
+  // Combined render functions for merged tabs
+  const renderProfessionalExpertiseSection = () => (
+    <div className="space-y-6">
+      {renderProfessionalSection()}
+      {renderExpertiseSection()}
+    </div>
+  )
+
+  const renderAvailabilityPreferencesSection = () => (
+    <div className="space-y-6">
+      {renderAvailabilitySection()}
+      {renderWorkPreferencesSection()}
+    </div>
+  )
+
+  const renderDocumentsVerificationSection = () => (
+    <div className="space-y-6">
+      {renderDocumentManagementSection()}
+      {renderVerificationSection()}
+    </div>
+  )
+
   const renderSectionContent = () => {
     switch (activeSection) {
       case 'overview': return renderOverviewSection()
-      case 'professional': return renderProfessionalSection()
-      case 'expertise': return renderExpertiseSection()
-      case 'availability': return renderAvailabilitySection()
-      case 'verification': return renderVerificationSection()
+      case 'professional-expertise': return renderProfessionalExpertiseSection()
+      case 'availability-preferences': return renderAvailabilityPreferencesSection()
+      case 'documents-verification': return renderDocumentsVerificationSection()
       default: return renderOverviewSection()
     }
   }
 
   return (
-    <div className="min-h-screen bg-gray-25 p-6">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Profile Management</h1>
-          <p className="text-gray-600">Manage your professional profile and expertise</p>
-        </div>
+    <div className="min-h-screen bg-gray-25 flex">
+      {/* Sidebar */}
+      <CFOSidebar 
+        onNavigate={onNavigate}
+        accountType={accountType}
+        email={email}
+        activePage="cfo-profile-management"
+      />
 
-        {/* Navigation Tabs */}
-        <div className="mb-6">
-          <nav className="flex space-x-8">
-            {profileSections.map((section) => (
-              <button
-                key={section.id}
-                onClick={() => setActiveSection(section.id)}
-                className={`flex items-center space-x-2 pb-4 px-1 border-b-2 font-medium text-sm ${
-                  activeSection === section.id
-                    ? 'border-primary-500 text-primary-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                {section.icon}
-                <span>{section.name}</span>
-              </button>
-            ))}
-          </nav>
-        </div>
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col">
+        {/* Top Header */}
+        <header className="bg-white border-b border-gray-200 px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900">Profile Management</h2>
+              <p className="text-sm text-gray-600">Manage your professional profile and expertise</p>
+            </div>
+          </div>
+        </header>
 
-        {/* Content */}
-        {renderSectionContent()}
+        {/* Main Content Area */}
+        <main className="flex-1 overflow-auto p-6">
+          <div className="max-w-6xl mx-auto">
+            {/* Navigation Tabs */}
+            <div className="mb-6">
+              <div className="overflow-x-auto">
+                <nav className="flex space-x-8 min-w-max">
+                  {profileSections.map((section) => (
+                    <button
+                      key={section.id}
+                      onClick={() => setActiveSection(section.id)}
+                      className={`flex items-center space-x-2 pb-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                        activeSection === section.id
+                          ? 'border-primary-500 text-primary-600'
+                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      }`}
+                    >
+                      {section.icon}
+                      <span>{section.name}</span>
+                    </button>
+                  ))}
+                </nav>
+              </div>
+            </div>
+
+            {/* Content */}
+            {renderSectionContent()}
+          </div>
+        </main>
       </div>
     </div>
   )

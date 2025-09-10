@@ -189,7 +189,7 @@ interface SmeDashboardProps {
                           <Button 
                             variant={documentsUploaded > 0 ? "outline" : "default"}
                             className="w-full" 
-                            size="sm"
+                            size="lg"
                             onClick={(e) => {
                               e.stopPropagation()
                               onNavigate('upload-center', accountType, email)
@@ -240,7 +240,7 @@ interface SmeDashboardProps {
               </p>
               <Button 
                 className="w-full" 
-                size="sm" 
+                size="lg" 
                 variant={banksConnected > 0 ? "outline" : "default"}
                 onClick={(e) => {
                   e.stopPropagation()

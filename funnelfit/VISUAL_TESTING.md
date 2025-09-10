@@ -161,3 +161,4 @@ npx playwright test --config=playwright.config.ts --project="Mobile Chrome"
 6. **Design System Documentation**: Generate visual documentation automatically
 
 This setup provides comprehensive visual testing capabilities that will help make informed design decisions and maintain high-quality UI consistency across the FunnelFit platform.
+

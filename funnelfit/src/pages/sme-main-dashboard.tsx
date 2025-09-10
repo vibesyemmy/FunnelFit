@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
-import { Button, Card, CardContent } from '../components/ui'
+import { Button, Card, CardContent, Modal, Input, Label, Select } from '../components/ui'
+import ExpenseDetail, { ExpenseData } from '../components/ExpenseDetail'
+import CFORequestWizard, { CFORequestData } from '../components/CFORequestWizard'
 import { 
   ArrowLeftIcon,
   HomeIcon,
@@ -9,6 +11,7 @@ import {
   UsersIcon,
   MessageSquareIcon,
   SettingsIcon,
+  UserIcon,
   DollarSignIcon,
   TrendingUpIcon,
   CalendarIcon,
@@ -19,7 +22,17 @@ import {
   AlertCircleIcon,
   SearchIcon,
   FilterIcon,
-  MoreHorizontalIcon
+  MoreHorizontalIcon,
+  CreditCardIcon,
+  ReceiptIcon,
+  LinkIcon,
+  UploadIcon,
+  XIcon,
+  PlusIcon,
+  FileTextIcon as FileText,
+  MicIcon,
+  PlayIcon,
+  PaperclipIcon
 } from 'lucide-react'
 
 interface SmeMainDashboardProps {
@@ -34,9 +47,72 @@ const SmeMainDashboard: React.FC<SmeMainDashboardProps> = ({
   email 
 }) => {
   const [activeModule, setActiveModule] = useState('overview')
+  const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false)
+  const [expenseForm, setExpenseForm] = useState({
+    amount: '',
+    category: '',
+    description: '',
+    date: new Date().toISOString().split('T')[0],
+    receipt: null as File | null
+  })
+  const [selectedExpense, setSelectedExpense] = useState<ExpenseData | null>(null)
+  const [isExpenseDetailOpen, setIsExpenseDetailOpen] = useState(false)
+  const [isCFORequestWizardOpen, setIsCFORequestWizardOpen] = useState(false)
 
   // Mock data - in real app this would come from API
   const companyName = "Acme Corp"
+
+  const mockExpenses: ExpenseData[] = [
+    {
+      id: '1',
+      title: 'Office Supplies - Staples',
+      amount: 45000,
+      category: 'Office Expenses',
+      date: 'Dec 15, 2024',
+      status: 'categorized',
+      description: 'Monthly office supplies including paper, pens, and folders',
+      receiptNumber: '12345',
+      vendor: 'Staples Nigeria',
+      paymentMethod: 'Company Credit Card',
+      submittedBy: 'John Doe',
+      submittedDate: 'Dec 15, 2024',
+      receiptUrl: '/api/receipts/12345.jpg',
+      notes: 'Regular monthly office supplies purchase'
+    },
+    {
+      id: '2',
+      title: 'Uber Business Trip',
+      amount: 15500,
+      category: 'Travel',
+      date: 'Dec 14, 2024',
+      status: 'pending',
+      description: 'Transportation to client meeting downtown',
+      receiptNumber: '67890',
+      vendor: 'Uber Technologies',
+      paymentMethod: 'Personal Card (Reimbursable)',
+      submittedBy: 'Jane Smith',
+      submittedDate: 'Dec 14, 2024',
+      receiptUrl: '/api/receipts/67890.jpg'
+    },
+    {
+      id: '3',
+      title: 'Team Lunch Meeting',
+      amount: 28000,
+      category: 'Meals',
+      date: 'Dec 13, 2024',
+      status: 'approved',
+      description: 'Business lunch with potential clients',
+      receiptNumber: '54321',
+      vendor: 'The Wheatbaker Hotel',
+      paymentMethod: 'Company Credit Card',
+      submittedBy: 'Mike Johnson',
+      submittedDate: 'Dec 13, 2024',
+      approvedBy: 'Sarah Wilson',
+      approvedDate: 'Dec 14, 2024',
+      receiptUrl: '/api/receipts/54321.jpg',
+      notes: 'Client meeting to discuss Q1 2025 partnership'
+    }
+  ]
 
   const navigationModules = [
     {
@@ -52,10 +128,28 @@ const SmeMainDashboard: React.FC<SmeMainDashboardProps> = ({
       description: 'Manage uploaded documents and reports'
     },
     {
+      id: 'transactions',
+      name: 'Transactions',
+      icon: <CreditCardIcon className="h-5 w-5" />,
+      description: 'View and categorize transactions'
+    },
+    {
+      id: 'expenses',
+      name: 'Expenses',
+      icon: <ReceiptIcon className="h-5 w-5" />,
+      description: 'Manage receipts and expense tracking'
+    },
+    {
       id: 'financials',
       name: 'Financials',
       icon: <BarChart3Icon className="h-5 w-5" />,
       description: 'Financial reports and analysis'
+    },
+    {
+      id: 'messages',
+      name: 'Messages',
+      icon: <MessageSquareIcon className="h-5 w-5" />,
+      description: 'Communicate with your bookkeeper'
     },
     {
       id: 'cfo',
@@ -70,10 +164,10 @@ const SmeMainDashboard: React.FC<SmeMainDashboardProps> = ({
       description: 'Cash flow management and forecasting'
     },
     {
-      id: 'settings',
-      name: 'Settings',
-      icon: <SettingsIcon className="h-5 w-5" />,
-      description: 'Account and preferences'
+      id: 'profile',
+      name: 'Profile',
+      icon: <UserIcon className="h-5 w-5" />,
+      description: 'SME profile and company information'
     }
   ]
 
@@ -683,126 +777,1116 @@ const SmeMainDashboard: React.FC<SmeMainDashboardProps> = ({
           </div>
         )
       
-      case 'settings':
+      case 'profile':
         return (
           <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Settings</h2>
-              <p className="text-gray-600">Manage your account settings and configurations.</p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">SME Profile</h2>
+                <p className="text-gray-600">Manage your company profile and business information</p>
+              </div>
+              <Button size="sm">
+                Edit Profile
+              </Button>
             </div>
             
-            {/* Settings Sections */}
-            <div className="space-y-6">
-              {/* Banking Configuration */}
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center space-x-3 mb-4">
-                    <div className="p-2 bg-primary-100 rounded-lg">
-                      <BuildingIcon className="h-6 w-6 text-primary-600" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900">Banking</h3>
-                      <p className="text-sm text-gray-600">Manage connected bank accounts and transactions</p>
+            {/* Profile Overview */}
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-start space-x-6">
+                  <div className="w-24 h-24 bg-primary-100 rounded-full flex items-center justify-center">
+                    <span className="text-2xl font-bold text-primary-600">
+                      {companyName.charAt(0)}
+                    </span>
+                  </div>
+                  
+                  <div className="flex-1">
+                    <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                      {companyName}
+                    </h1>
+                    <p className="text-lg text-primary-600 mb-2">Technology Company</p>
+                    <p className="text-gray-600 mb-4">
+                      A growing technology company focused on innovative solutions for small and medium businesses.
+                    </p>
+                    
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center space-x-2">
+                        <BuildingIcon className="h-4 w-4 text-gray-500" />
+                        <span className="text-sm text-gray-600">₦5B - ₦10B Revenue</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <UsersIcon className="h-4 w-4 text-gray-500" />
+                        <span className="text-sm text-gray-600">26-50 Employees</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <CalendarIcon className="h-4 w-4 text-gray-500" />
+                        <span className="text-sm text-gray-600">5+ Years in Business</span>
+                      </div>
                     </div>
                   </div>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                          <span className="text-sm font-semibold text-green-700">GT</span>
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">GTBank</p>
-                          <p className="text-xs text-gray-500">Connected • Syncing</p>
-                        </div>
-                      </div>
-                      <Button variant="outline" size="sm">Manage</Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Company Information */}
+            <Card>
+              <CardContent className="p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Company Information</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">Legal Company Name</label>
+                    <p className="text-sm text-gray-900 mt-1">{companyName}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">Industry</label>
+                    <p className="text-sm text-gray-900 mt-1">Technology</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">Revenue Range</label>
+                    <p className="text-sm text-gray-900 mt-1">₦5B - ₦10B</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">Number of Employees</label>
+                    <p className="text-sm text-gray-900 mt-1">26-50</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">Years in Business</label>
+                    <p className="text-sm text-gray-900 mt-1">5+ years</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">Location</label>
+                    <p className="text-sm text-gray-900 mt-1">Lagos, Nigeria</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Contact Information */}
+            <Card>
+              <CardContent className="p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Primary Contact</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">Contact Person</label>
+                    <p className="text-sm text-gray-900 mt-1">John Smith</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">Job Title</label>
+                    <p className="text-sm text-gray-900 mt-1">CEO & Founder</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">Email</label>
+                    <p className="text-sm text-gray-900 mt-1">{email}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">Phone</label>
+                    <p className="text-sm text-gray-900 mt-1">+234 801 234 5678</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Financial Challenges & Goals */}
+            <Card>
+              <CardContent className="p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Financial Challenges & Goals</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">Current Financial Challenges</label>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      <span className="px-3 py-1 bg-red-100 text-red-800 text-sm rounded-full">Cash flow management</span>
+                      <span className="px-3 py-1 bg-red-100 text-red-800 text-sm rounded-full">Financial planning & budgeting</span>
+                      <span className="px-3 py-1 bg-red-100 text-red-800 text-sm rounded-full">Fundraising & investment</span>
                     </div>
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                          <span className="text-sm font-semibold text-blue-700">ZB</span>
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">Zenith Bank</p>
-                          <p className="text-xs text-gray-500">Connected • Syncing</p>
-                        </div>
-                      </div>
-                      <Button variant="outline" size="sm">Manage</Button>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">CFO Support Areas Needed</label>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">Financial planning & budgeting</span>
+                      <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">Cash flow management</span>
+                      <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">Fundraising & capital raising</span>
+                      <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">Financial reporting & analysis</span>
                     </div>
-                    <Button 
-                      variant="outline" 
-                      className="w-full mt-3"
-                      onClick={() => onNavigate('bank-connection', accountType, email)}
-                    >
-                      Connect Another Bank
-                    </Button>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">Preferred Engagement Duration</label>
+                    <p className="text-sm text-gray-900 mt-1">6-12 months</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Communication Preferences */}
+            <Card>
+              <CardContent className="p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Communication Preferences</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">Preferred Communication Methods</label>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      <span className="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Email</span>
+                      <span className="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Video calls</span>
+                      <span className="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">In-person meetings</span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )
+      
+      case 'transactions':
+        return (
+          <div className="space-y-6">
+            {/* Quick Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-blue-100 rounded-lg">
+                      <CreditCardIcon className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Total Transactions</p>
+                      <p className="text-xl font-bold text-gray-900">2,139</p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
-
-              {/* Account Settings */}
               <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center space-x-3 mb-4">
-                    <div className="p-2 bg-gray-100 rounded-lg">
-                      <UsersIcon className="h-6 w-6 text-gray-600" />
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-green-100 rounded-lg">
+                      <CheckCircleIcon className="h-5 w-5 text-green-600" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900">Account</h3>
-                      <p className="text-sm text-gray-600">Company information and profile settings</p>
-                    </div>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">Company Name</p>
-                        <p className="text-sm text-gray-600">{companyName}</p>
-                      </div>
-                      <Button variant="outline" size="sm">Edit</Button>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">Email</p>
-                        <p className="text-sm text-gray-600">{email}</p>
-                      </div>
-                      <Button variant="outline" size="sm">Edit</Button>
+                      <p className="text-sm text-gray-600">Categorized</p>
+                      <p className="text-xl font-bold text-gray-900">1,987</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
-
-              {/* Preferences */}
               <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center space-x-3 mb-4">
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-yellow-100 rounded-lg">
+                      <ClockIcon className="h-5 w-5 text-yellow-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Pending Review</p>
+                      <p className="text-xl font-bold text-gray-900">152</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-3">
                     <div className="p-2 bg-purple-100 rounded-lg">
-                      <SettingsIcon className="h-6 w-6 text-purple-600" />
+                       <DollarSignIcon className="h-5 w-5 text-purple-600" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900">Preferences</h3>
-                      <p className="text-sm text-gray-600">Customize your dashboard experience</p>
-                    </div>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">Email Notifications</p>
-                        <p className="text-sm text-gray-600">Receive updates via email</p>
-                      </div>
-                      <div className="w-10 h-6 bg-primary-600 rounded-full"></div>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">Auto-sync Banks</p>
-                        <p className="text-sm text-gray-600">Automatically import transactions</p>
-                      </div>
-                      <div className="w-10 h-6 bg-primary-600 rounded-full"></div>
+                      <p className="text-sm text-gray-600">This Month</p>
+                      <p className="text-xl font-bold text-gray-900">₦2.4M</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
             </div>
+
+            {/* Search and Filters */}
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-3 lg:space-y-0 lg:space-x-4">
+              <div className="flex flex-col md:flex-row md:items-center space-y-3 md:space-y-0 md:space-x-4">
+                <div className="flex-1 max-w-md">
+                  <div className="relative">
+                    <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search transactions..."
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    />
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Button variant="outline" className="px-4 py-2 h-10 bg-white border-gray-300 text-gray-700 hover:bg-gray-50 justify-between min-w-[140px]">
+                    <span>All Categories</span>
+                    <svg className="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </Button>
+                  <Button variant="outline" className="px-4 py-2 h-10 bg-white border-gray-300 text-gray-700 hover:bg-gray-50 justify-between min-w-[120px]">
+                    <span>All Status</span>
+                    <svg className="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </Button>
+                  <Button variant="outline" className="w-10 h-10 p-0 bg-white border-gray-300 hover:bg-gray-50 flex items-center justify-center">
+                    <FilterIcon className="h-4 w-4 text-gray-600" />
+                  </Button>
+                </div>
+              </div>
+              <div className="flex items-center space-x-3">
+                <Button
+                  onClick={() => onNavigate('bank-connection', accountType, email)}
+                  className="flex items-center space-x-2 h-10"
+                >
+                  <LinkIcon className="h-4 w-4" />
+                  <span>Connect Bank</span>
+                </Button>
+              </div>
+            </div>
+            
+            {/* Transactions Table */}
+            <Card>
+              <CardContent className="p-0">
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-50 border-b border-gray-200">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Transaction
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Amount
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Category
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Date
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Status
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      <tr className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <CreditCardIcon className="h-5 w-5 text-gray-400 mr-3" />
+                            <div>
+                              <div className="text-sm font-medium text-gray-900">Office Supplies - Staples</div>
+                              <div className="text-sm text-gray-500">GTBank Current Account</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm font-medium text-red-600">-₦45,000</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            Office Expenses
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Dec 15, 2024</td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            Categorized
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <MoreHorizontalIcon className="h-4 w-4" />
+                          </Button>
+                        </td>
+                      </tr>
+                      <tr className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <CreditCardIcon className="h-5 w-5 text-gray-400 mr-3" />
+                            <div>
+                              <div className="text-sm font-medium text-gray-900">Client Payment - ABC Corp</div>
+                              <div className="text-sm text-gray-500">Zenith Bank Savings Account</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm font-medium text-green-600">+₦250,000</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            Revenue
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Dec 14, 2024</td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            Categorized
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <MoreHorizontalIcon className="h-4 w-4" />
+                          </Button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )
+      
+      case 'expenses':
+        return (
+          <div className="space-y-6">
+            {/* Quick Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-blue-100 rounded-lg">
+                      <ReceiptIcon className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Total Expenses</p>
+                      <p className="text-xl font-bold text-gray-900">₦275,000</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-green-100 rounded-lg">
+                      <CheckCircleIcon className="h-5 w-5 text-green-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Categorized</p>
+                      <p className="text-xl font-bold text-gray-900">18</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-yellow-100 rounded-lg">
+                      <ClockIcon className="h-5 w-5 text-yellow-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Pending Review</p>
+                      <p className="text-xl font-bold text-gray-900">5</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-purple-100 rounded-lg">
+                      <CalendarIcon className="h-5 w-5 text-purple-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">This Month</p>
+                      <p className="text-xl font-bold text-gray-900">₦125,000</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Search and Filters */}
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+              <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center flex-1">
+                <div className="relative flex-1 max-w-md">
+                  <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <input
+                    type="text"
+                    placeholder="Search expenses..."
+                    className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" className="flex items-center space-x-2">
+                     <span>All Categories</span>
+                   </Button>
+                   <Button variant="outline" size="sm" className="flex items-center space-x-2">
+                     <span>All Status</span>
+                   </Button>
+                  <Button variant="outline" size="sm">
+                    <FilterIcon className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              <Button 
+                className="flex items-center space-x-2"
+                onClick={() => setIsExpenseModalOpen(true)}
+              >
+                <ReceiptIcon className="h-4 w-4" />
+                <span>Upload Receipt</span>
+              </Button>
+            </div>
+
+            {/* Expenses Table */}
+            <Card>
+              <CardContent className="p-0">
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50 border-b border-gray-200">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Expense
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Amount
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Category
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Date
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Status
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {mockExpenses.map((expense) => {
+                        const getStatusColor = (status: string) => {
+                          switch (status) {
+                            case 'pending':
+                              return 'bg-yellow-100 text-yellow-800';
+                            case 'categorized':
+                              return 'bg-green-100 text-green-800';
+                            case 'approved':
+                              return 'bg-blue-100 text-blue-800';
+                            case 'rejected':
+                              return 'bg-red-100 text-red-800';
+                            default:
+                              return 'bg-gray-100 text-gray-800';
+                          }
+                        };
+
+                        const getCategoryColor = (category: string) => {
+                          switch (category.toLowerCase()) {
+                            case 'office expenses':
+                              return 'bg-blue-100 text-blue-800';
+                            case 'travel':
+                              return 'bg-purple-100 text-purple-800';
+                            case 'meals':
+                              return 'bg-orange-100 text-orange-800';
+                            default:
+                              return 'bg-gray-100 text-gray-800';
+                          }
+                        };
+
+                        return (
+                          <tr 
+                            key={expense.id} 
+                            className="hover:bg-gray-50 cursor-pointer"
+                            onClick={() => {
+                              setSelectedExpense(expense);
+                              setIsExpenseDetailOpen(true);
+                            }}
+                          >
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="flex items-center">
+                                <ReceiptIcon className="h-5 w-5 text-gray-400 mr-3" />
+                                <div>
+                                  <div className="text-sm font-medium text-gray-900">{expense.title}</div>
+                                  <div className="text-sm text-gray-500">Receipt #{expense.receiptNumber}</div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm font-medium text-red-600">₦{expense.amount.toLocaleString()}</div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getCategoryColor(expense.category)}`}>
+                                {expense.category}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{expense.date}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(expense.status)}`}>
+                                {expense.status.charAt(0).toUpperCase() + expense.status.slice(1)}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="h-8 w-8 p-0"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  // Handle action menu
+                                }}
+                              >
+                                <MoreHorizontalIcon className="h-4 w-4" />
+                              </Button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )
+      
+      case 'messages':
+        return (
+          <div className="flex h-full">
+            {/* CFO List Sidebar */}
+            <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
+              
+              <div className="flex-1 overflow-y-auto">
+                {[
+                  { name: 'Sarah (Bookkeeper)', role: 'Bookkeeper', status: 'online', avatar: 'SK', lastMessage: 'I\'ve reviewed your November transactions...', time: '2h ago', unread: true },
+                  { name: 'Michael (CFO)', role: 'Chief Financial Officer', status: 'away', avatar: 'MJ', lastMessage: 'Let\'s schedule a call to discuss...', time: '1d ago', unread: false },
+                  { name: 'Lisa (Tax Advisor)', role: 'Tax Advisor', status: 'offline', avatar: 'LT', lastMessage: 'The Q4 tax planning looks good', time: '3d ago', unread: false }
+                ].map((cfo) => (
+                  <div key={cfo.name} className="p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer">
+                    <div className="flex items-center space-x-3">
+                      <div className="relative">
+                        <div className="w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-medium">
+                          {cfo.avatar}
+                        </div>
+                        <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${
+                          cfo.status === 'online' ? 'bg-green-500' : 
+                          cfo.status === 'away' ? 'bg-yellow-500' : 'bg-gray-400'
+                        }`} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm font-medium text-gray-900 truncate">{cfo.name}</p>
+                          <span className="text-xs text-gray-500">{cfo.time}</span>
+                        </div>
+                        <p className="text-xs text-gray-500 truncate">{cfo.role}</p>
+                        <p className="text-xs text-gray-600 truncate mt-1">{cfo.lastMessage}</p>
+                      </div>
+                      {cfo.unread && (
+                        <div className="w-2 h-2 bg-blue-500 rounded-full" />
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Chat Interface */}
+            <div className="flex-1 flex flex-col">
+              {/* Chat Header */}
+              <div className="p-4 border-b border-gray-200 bg-white">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="relative">
+                      <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-medium">
+                        SK
+                      </div>
+                      <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-900">Sarah (Bookkeeper)</h3>
+                      <p className="text-xs text-gray-500">Bookkeeper • Online</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Button variant="outline" size="sm">
+                      <CalendarIcon className="h-4 w-4 mr-1" />
+                      Schedule Call
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Chat Messages */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+                {/* Sample messages */}
+                <div className="flex justify-start">
+                  <div className="max-w-xs lg:max-w-md">
+                    <div className="bg-white rounded-lg p-3 shadow-sm">
+                      <p className="text-sm text-gray-900">Hi! I've reviewed your November transactions. I have a few questions about some expense categories. Could you clarify the ₦45,000 payment to Staples?</p>
+                      <p className="text-xs text-gray-500 mt-1">2:30 PM</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex justify-end">
+                  <div className="max-w-xs lg:max-w-md">
+                    <div className="bg-blue-500 rounded-lg p-3 shadow-sm">
+                      <p className="text-sm text-white">That was for office supplies - printer paper, folders, and stationery for the team. I can upload the receipt if needed.</p>
+                      <p className="text-xs text-blue-100 mt-1">2:32 PM</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Document sharing example */}
+                <div className="flex justify-start">
+                  <div className="max-w-xs lg:max-w-md">
+                    <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
+                      <div className="flex items-center space-x-2">
+                        <FileTextIcon className="h-5 w-5 text-blue-500" />
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-gray-900">November_Expense_Report.pdf</p>
+                          <p className="text-xs text-gray-500">2.4 MB</p>
+                        </div>
+                        <Button size="sm" variant="outline">Download</Button>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-2">2:35 PM</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Voice memo example */}
+                <div className="flex justify-end">
+                  <div className="max-w-xs lg:max-w-md">
+                    <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                          <PlayIcon className="h-4 w-4 text-blue-600" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-gray-900">Voice Message</p>
+                          <div className="flex items-center space-x-2">
+                            <div className="flex-1 bg-gray-200 rounded-full h-1">
+                              <div className="bg-blue-500 h-1 rounded-full" style={{ width: '60%' }}></div>
+                            </div>
+                            <span className="text-xs text-gray-500">1:23</span>
+                          </div>
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-2">2:40 PM</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Message Input */}
+              <div className="p-4 bg-white border-t border-gray-200">
+                <div className="flex items-center space-x-2">
+                  <div className="flex-1 relative">
+                    <input
+                      type="text"
+                      placeholder="Type your message..."
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  <Button size="sm" variant="outline" className="p-2">
+                    <PaperclipIcon className="h-4 w-4" />
+                  </Button>
+                  <Button size="sm" variant="outline" className="p-2">
+                    <MicIcon className="h-4 w-4" />
+                  </Button>
+                  <Button size="sm">
+                    Send
+                  </Button>
+                </div>
+                <div className="flex items-center justify-between mt-2 text-xs text-gray-500">
+                  <span>Press Enter to send, Shift + Enter for new line</span>
+                  <span>📎 Attach files • 🎤 Voice memo</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      
+      case 'financials':
+        return (
+          <div className="space-y-6">
+            {/* Financial Overview Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-green-100 rounded-lg">
+                      <DollarSignIcon className="h-6 w-6 text-green-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Net Income</p>
+                      <p className="text-2xl font-bold text-gray-900">₦485,000</p>
+                      <p className="text-sm text-green-600">+12.5% from last month</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-blue-100 rounded-lg">
+                      <TrendingUpIcon className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Revenue</p>
+                      <p className="text-2xl font-bold text-gray-900">₦2.5M</p>
+                      <p className="text-sm text-blue-600">+8.3% from last month</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-orange-100 rounded-lg">
+                      <ReceiptIcon className="h-6 w-6 text-orange-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Total Expenses</p>
+                      <p className="text-2xl font-bold text-gray-900">₦2.02M</p>
+                      <p className="text-sm text-orange-600">+5.1% from last month</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-purple-100 rounded-lg">
+                      <BarChart3Icon className="h-6 w-6 text-purple-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Profit Margin</p>
+                      <p className="text-2xl font-bold text-gray-900">19.4%</p>
+                      <p className="text-sm text-purple-600">+2.1% from last month</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Financial Reports Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Profit & Loss */}
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-gray-900">Profit & Loss</h3>
+                    <Button variant="outline" size="sm">View Full Report</Button>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Revenue</span>
+                      <span className="text-sm font-medium text-gray-900">₦2,500,000</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Cost of Goods Sold</span>
+                      <span className="text-sm font-medium text-gray-900">₦1,200,000</span>
+                    </div>
+                    <div className="flex justify-between items-center border-t pt-2">
+                      <span className="text-sm font-medium text-gray-900">Gross Profit</span>
+                      <span className="text-sm font-medium text-gray-900">₦1,300,000</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Operating Expenses</span>
+                      <span className="text-sm font-medium text-gray-900">₦815,000</span>
+                    </div>
+                    <div className="flex justify-between items-center border-t pt-2">
+                      <span className="text-sm font-semibold text-gray-900">Net Income</span>
+                      <span className="text-sm font-semibold text-green-600">₦485,000</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Cash Flow */}
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-gray-900">Cash Flow</h3>
+                    <Button variant="outline" size="sm">View Details</Button>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Operating Activities</span>
+                      <span className="text-sm font-medium text-green-600">+₦520,000</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Investing Activities</span>
+                      <span className="text-sm font-medium text-red-600">-₦150,000</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Financing Activities</span>
+                      <span className="text-sm font-medium text-red-600">-₦80,000</span>
+                    </div>
+                    <div className="flex justify-between items-center border-t pt-2">
+                      <span className="text-sm font-semibold text-gray-900">Net Cash Flow</span>
+                      <span className="text-sm font-semibold text-green-600">+₦290,000</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Cash Balance</span>
+                      <span className="text-sm font-medium text-gray-900">₦1,850,000</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Balance Sheet Summary */}
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Balance Sheet Summary</h3>
+                  <Button variant="outline" size="sm">View Full Balance Sheet</Button>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900 mb-3">Assets</h4>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-sm text-gray-600">Current Assets</span>
+                        <span className="text-sm font-medium">₦2,100,000</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm text-gray-600">Fixed Assets</span>
+                        <span className="text-sm font-medium">₦1,500,000</span>
+                      </div>
+                      <div className="flex justify-between border-t pt-2">
+                        <span className="text-sm font-semibold">Total Assets</span>
+                        <span className="text-sm font-semibold">₦3,600,000</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900 mb-3">Liabilities</h4>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-sm text-gray-600">Current Liabilities</span>
+                        <span className="text-sm font-medium">₦800,000</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm text-gray-600">Long-term Debt</span>
+                        <span className="text-sm font-medium">₦1,200,000</span>
+                      </div>
+                      <div className="flex justify-between border-t pt-2">
+                        <span className="text-sm font-semibold">Total Liabilities</span>
+                        <span className="text-sm font-semibold">₦2,000,000</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900 mb-3">Equity</h4>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-sm text-gray-600">Owner's Equity</span>
+                        <span className="text-sm font-medium">₦1,115,000</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm text-gray-600">Retained Earnings</span>
+                        <span className="text-sm font-medium">₦485,000</span>
+                      </div>
+                      <div className="flex justify-between border-t pt-2">
+                        <span className="text-sm font-semibold">Total Equity</span>
+                        <span className="text-sm font-semibold">₦1,600,000</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Financial Ratios */}
+            <Card>
+              <CardContent className="p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Key Financial Ratios</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="text-center p-4 bg-gray-50 rounded-lg">
+                    <p className="text-sm text-gray-600 mb-1">Current Ratio</p>
+                    <p className="text-xl font-bold text-gray-900">2.63</p>
+                    <p className="text-xs text-green-600">Healthy</p>
+                  </div>
+                  <div className="text-center p-4 bg-gray-50 rounded-lg">
+                    <p className="text-sm text-gray-600 mb-1">Debt-to-Equity</p>
+                    <p className="text-xl font-bold text-gray-900">1.25</p>
+                    <p className="text-xs text-yellow-600">Moderate</p>
+                  </div>
+                  <div className="text-center p-4 bg-gray-50 rounded-lg">
+                    <p className="text-sm text-gray-600 mb-1">ROE</p>
+                    <p className="text-xl font-bold text-gray-900">30.3%</p>
+                    <p className="text-xs text-green-600">Excellent</p>
+                  </div>
+                  <div className="text-center p-4 bg-gray-50 rounded-lg">
+                    <p className="text-sm text-gray-600 mb-1">Gross Margin</p>
+                    <p className="text-xl font-bold text-gray-900">52.0%</p>
+                    <p className="text-xs text-green-600">Strong</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )
+      
+      case 'cfo':
+        return (
+          <div className="space-y-6">
+            {/* CFO Services Header */}
+            <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-6 text-white">
+              <h2 className="text-2xl font-bold mb-2">CFO Services</h2>
+              <p className="text-blue-100">Connect with expert fractional CFOs to accelerate your business growth</p>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+                <CardContent className="p-6 text-center">
+                  <div className="p-3 bg-blue-100 rounded-full w-12 h-12 mx-auto mb-4 flex items-center justify-center">
+                    <UsersIcon className="h-6 w-6 text-blue-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Find a CFO</h3>
+                  <p className="text-gray-600 text-sm mb-4">Get matched with expert CFOs based on your specific needs</p>
+                  <Button className="w-full" onClick={() => setIsCFORequestWizardOpen(true)}>
+                    Start Matching Process
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+                <CardContent className="p-6 text-center">
+                  <div className="p-3 bg-green-100 rounded-full w-12 h-12 mx-auto mb-4 flex items-center justify-center">
+                    <CalendarIcon className="h-6 w-6 text-green-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Schedule Call</h3>
+                  <p className="text-gray-600 text-sm mb-4">Book a chemistry call with recommended CFOs</p>
+                  <Button variant="outline" className="w-full">
+                    View Available Slots
+                  </Button>
+                </CardContent>
+              </Card>
+
+
+            </div>
+
+            {/* Active Engagements */}
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Active Engagements</h3>
+                  <Button variant="outline" size="sm">
+                    View All
+                  </Button>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+                    <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
+                      JD
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-medium text-gray-900">John Davis, CPA</h4>
+                      <p className="text-sm text-gray-600">Financial Planning & Analysis</p>
+                      <div className="flex items-center space-x-4 mt-2">
+                        <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Active</span>
+                        <span className="text-xs text-gray-500">Started 2 weeks ago</span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-medium text-gray-900">₦150,000/month</p>
+                      <p className="text-xs text-gray-500">Next meeting: Tomorrow 2PM</p>
+                    </div>
+                  </div>
+                  
+                  <div className="text-center py-8 text-gray-500">
+                    <BuildingIcon className="h-12 w-12 mx-auto mb-2 text-gray-300" />
+                    <p>No other active engagements</p>
+                    <Button variant="link" className="mt-2">
+                      Find more CFOs
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Request History */}
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Recent Requests</h3>
+                  <Button variant="outline" size="sm">
+                    View History
+                  </Button>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <div>
+                      <p className="font-medium text-gray-900">Fundraising Strategy</p>
+                      <p className="text-sm text-gray-600">Requested 1 week ago</p>
+                    </div>
+                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">Matched</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <div>
+                      <p className="font-medium text-gray-900">Financial Modeling</p>
+                      <p className="text-sm text-gray-600">Requested 3 weeks ago</p>
+                    </div>
+                    <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Completed</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Recommended CFOs */}
+            <Card>
+              <CardContent className="p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Recommended CFOs</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="border rounded-lg p-4">
+                    <div className="flex items-center space-x-3 mb-3">
+                      <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
+                        SM
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900">Sarah Mitchell</h4>
+                        <p className="text-sm text-gray-600">M&A Specialist</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2 mb-3">
+                      <div className="flex text-yellow-400">
+                        {'★'.repeat(5)}
+                      </div>
+                      <span className="text-sm text-gray-600">(4.9)</span>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-3">Expert in mergers, acquisitions, and strategic partnerships</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-900">₦200,000/month</span>
+                      <Button size="sm">
+                        View Profile
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="border rounded-lg p-4">
+                    <div className="flex items-center space-x-3 mb-3">
+                      <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center text-white font-semibold">
+                        MR
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900">Michael Roberts</h4>
+                        <p className="text-sm text-gray-600">Tech CFO</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2 mb-3">
+                      <div className="flex text-yellow-400">
+                        {'★'.repeat(5)}
+                      </div>
+                      <span className="text-sm text-gray-600">(4.8)</span>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-3">Specializes in SaaS metrics and venture capital</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-900">₦180,000/month</span>
+                      <Button size="sm">
+                        View Profile
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         )
       
@@ -918,6 +2002,195 @@ const SmeMainDashboard: React.FC<SmeMainDashboardProps> = ({
           {getModuleContent()}
         </main>
       </div>
+
+      {/* Add Expense Modal */}
+      <Modal
+        isOpen={isExpenseModalOpen}
+        onClose={() => {
+          setIsExpenseModalOpen(false)
+          setExpenseForm({
+            amount: '',
+            category: '',
+            description: '',
+            date: new Date().toISOString().split('T')[0],
+            receipt: null
+          })
+        }}
+        title="Add New Expense"
+        size="lg"
+      >
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Amount */}
+            <div>
+              <Label htmlFor="amount">Amount (₦)</Label>
+              <Input
+                id="amount"
+                type="number"
+                placeholder="0.00"
+                value={expenseForm.amount}
+                onChange={(e) => setExpenseForm(prev => ({ ...prev, amount: e.target.value }))}
+                className="mt-1"
+              />
+            </div>
+
+            {/* Category */}
+            <div>
+              <Label htmlFor="category">Category</Label>
+              <Select
+                 value={expenseForm.category}
+                 onChange={(value) => setExpenseForm(prev => ({ ...prev, category: value }))}
+                 options={[
+                   { value: 'office-expenses', label: 'Office Expenses' },
+                   { value: 'travel-transport', label: 'Travel & Transport' },
+                   { value: 'utilities', label: 'Utilities' },
+                   { value: 'marketing', label: 'Marketing' },
+                   { value: 'meals-entertainment', label: 'Meals & Entertainment' },
+                   { value: 'professional-services', label: 'Professional Services' },
+                   { value: 'other', label: 'Other' }
+                 ]}
+                 placeholder="Select category"
+                 className="mt-1"
+               />
+            </div>
+          </div>
+
+          {/* Description */}
+          <div>
+            <Label htmlFor="description">Description</Label>
+            <Input
+              id="description"
+              placeholder="Enter expense description"
+              value={expenseForm.description}
+              onChange={(e) => setExpenseForm(prev => ({ ...prev, description: e.target.value }))}
+              className="mt-1"
+            />
+          </div>
+
+          {/* Date */}
+          <div>
+            <Label htmlFor="date">Date</Label>
+            <Input
+              id="date"
+              type="date"
+              value={expenseForm.date}
+              onChange={(e) => setExpenseForm(prev => ({ ...prev, date: e.target.value }))}
+              className="mt-1"
+            />
+          </div>
+
+          {/* Receipt Upload */}
+          <div>
+            <Label htmlFor="receipt">Receipt (Optional)</Label>
+            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-gray-400 transition-colors">
+              <div className="space-y-1 text-center">
+                <UploadIcon className="mx-auto h-12 w-12 text-gray-400" />
+                <div className="flex text-sm text-gray-600">
+                  <label
+                    htmlFor="receipt-upload"
+                    className="relative cursor-pointer bg-white rounded-md font-medium text-primary-600 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500"
+                  >
+                    <span>Upload a file</span>
+                    <input
+                      id="receipt-upload"
+                      name="receipt-upload"
+                      type="file"
+                      accept="image/*,.pdf"
+                      className="sr-only"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0] || null
+                        setExpenseForm(prev => ({ ...prev, receipt: file }))
+                      }}
+                    />
+                  </label>
+                  <p className="pl-1">or drag and drop</p>
+                </div>
+                <p className="text-xs text-gray-500">PNG, JPG, PDF up to 10MB</p>
+                {expenseForm.receipt && (
+                  <p className="text-sm text-green-600 mt-2">
+                    Selected: {expenseForm.receipt.name}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex justify-end space-x-3 pt-4">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsExpenseModalOpen(false)
+                setExpenseForm({
+                  amount: '',
+                  category: '',
+                  description: '',
+                  date: new Date().toISOString().split('T')[0],
+                  receipt: null
+                })
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                // Handle form submission
+                console.log('Submitting expense:', expenseForm)
+                // In a real app, this would submit to the backend
+                setIsExpenseModalOpen(false)
+                setExpenseForm({
+                  amount: '',
+                  category: '',
+                  description: '',
+                  date: new Date().toISOString().split('T')[0],
+                  receipt: null
+                })
+              }}
+              disabled={!expenseForm.amount || !expenseForm.category || !expenseForm.description}
+            >
+              Add Expense
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Expense Detail Modal */}
+      {selectedExpense && (
+        <ExpenseDetail
+          expense={selectedExpense}
+          isOpen={isExpenseDetailOpen}
+          onClose={() => {
+            setIsExpenseDetailOpen(false);
+            setSelectedExpense(null);
+          }}
+          onEdit={(expense) => {
+            // Handle edit functionality
+            console.log('Edit expense:', expense);
+          }}
+          onDelete={(expenseId) => {
+            // Handle delete functionality
+            console.log('Delete expense:', expenseId);
+            setIsExpenseDetailOpen(false);
+            setSelectedExpense(null);
+          }}
+          onDownloadReceipt={(expense) => {
+            // Handle receipt download
+            console.log('Download receipt for:', expense.title);
+          }}
+        />
+      )}
+      
+      {/* CFO Request Wizard */}
+      <CFORequestWizard
+        isOpen={isCFORequestWizardOpen}
+        onClose={() => setIsCFORequestWizardOpen(false)}
+        onSubmit={(data: CFORequestData) => {
+          console.log('CFO Request submitted:', data)
+          // Here you would typically send the data to your API
+          // For now, we'll just log it and show a success message
+          alert('CFO request submitted successfully! We will match you with suitable CFOs within 24 hours.')
+        }}
+      />
     </div>
   )
 }

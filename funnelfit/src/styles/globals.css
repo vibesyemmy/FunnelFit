@@ -40,6 +40,29 @@
   .badge {
     @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold;
   }
+  
+  .checkbox-brand {
+    @apply w-4 h-4 bg-white border-2 border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:ring-offset-0 transition-colors duration-200;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+  
+  .checkbox-brand:checked {
+    @apply bg-primary-600 border-primary-600;
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m13.854 3.646-7.5 7.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6 10.293l7.146-7.147a.5.5 0 0 1 .708.708z'/%3e%3c/svg%3e");
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  
+  .checkbox-brand:hover {
+    @apply border-primary-400;
+  }
+  
+  .checkbox-brand:focus {
+    @apply outline-none ring-2 ring-primary-500 ring-offset-0;
+  }
 }
 
 @layer utilities {

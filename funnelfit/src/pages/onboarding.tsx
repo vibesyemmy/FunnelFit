@@ -23,7 +23,7 @@ const OnboardingPage: React.FC<OnboardingPageProps> = ({
     city: '',
     state: '',
     postalCode: '',
-    country: '',
+    country: 'Nigeria',
     industry: '',
     revenue: '',
     employees: '',
@@ -173,18 +173,44 @@ const OnboardingPage: React.FC<OnboardingPageProps> = ({
     'Over 20 years'
   ]
 
-  const countryOptions = [
-    'United States',
-    'Canada',
-    'United Kingdom',
-    'Australia',
-    'Germany',
-    'France',
-    'Netherlands',
-    'Switzerland',
-    'Singapore',
-    'Japan',
-    'Other'
+  const nigeriaStateOptions = [
+    'Abia',
+    'Adamawa',
+    'Akwa Ibom',
+    'Anambra',
+    'Bauchi',
+    'Bayelsa',
+    'Benue',
+    'Borno',
+    'Cross River',
+    'Delta',
+    'Ebonyi',
+    'Edo',
+    'Ekiti',
+    'Enugu',
+    'FCT (Abuja)',
+    'Gombe',
+    'Imo',
+    'Jigawa',
+    'Kaduna',
+    'Kano',
+    'Katsina',
+    'Kebbi',
+    'Kogi',
+    'Kwara',
+    'Lagos',
+    'Nasarawa',
+    'Niger',
+    'Ogun',
+    'Ondo',
+    'Osun',
+    'Oyo',
+    'Plateau',
+    'Rivers',
+    'Sokoto',
+    'Taraba',
+    'Yobe',
+    'Zamfara'
   ]
 
   const financialChallengeOptions = [
@@ -410,7 +436,7 @@ const OnboardingPage: React.FC<OnboardingPageProps> = ({
     
     switch (currentStep) {
       case 'company-info':
-        const companyFields = ['legalCompanyName', 'streetAddress', 'city', 'state', 'postalCode', 'country', 'industry', 'revenue', 'employees', 'yearsInBusiness']
+        const companyFields = ['legalCompanyName', 'streetAddress', 'city', 'state', 'postalCode', 'industry', 'revenue', 'employees', 'yearsInBusiness']
         isValid = companyFields.every(field => formData[field as keyof typeof formData].trim() !== '')
         break
       case 'contact-person':
@@ -544,7 +570,7 @@ const OnboardingPage: React.FC<OnboardingPageProps> = ({
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <label htmlFor="city" className="text-sm font-medium text-gray-700">
                   City*
@@ -558,20 +584,6 @@ const OnboardingPage: React.FC<OnboardingPageProps> = ({
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="state" className="text-sm font-medium text-gray-700">
-                  State/Province*
-                </label>
-                <Input
-                  id="state"
-                  placeholder="Enter state or province"
-                  value={formData.state}
-                  onChange={(e) => handleInputChange('state', e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
                 <label htmlFor="postalCode" className="text-sm font-medium text-gray-700">
                   Postal Code*
                 </label>
@@ -584,14 +596,14 @@ const OnboardingPage: React.FC<OnboardingPageProps> = ({
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="country" className="text-sm font-medium text-gray-700">
-                  Country*
+                <label htmlFor="state" className="text-sm font-medium text-gray-700">
+                  State*
                 </label>
                 <Select
-                  options={countryOptions.map(option => ({ value: option, label: option }))}
-                  value={formData.country}
-                  onChange={(value) => handleInputChange('country', value)}
-                  placeholder="Select country"
+                  options={nigeriaStateOptions.map(option => ({ value: option, label: option }))}
+                  value={formData.state}
+                  onChange={(value) => handleInputChange('state', value)}
+                  placeholder="Select state"
                 />
               </div>
             </div>
@@ -710,7 +722,7 @@ const OnboardingPage: React.FC<OnboardingPageProps> = ({
                       type="checkbox"
                       checked={formData.financialChallenges.includes(challenge)}
                       onChange={(e) => handleCheckboxChange(challenge, e.target.checked)}
-                      className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                      className="checkbox-brand"
                     />
                     <span className="text-sm text-gray-700">{challenge}</span>
                   </label>
@@ -748,7 +760,7 @@ const OnboardingPage: React.FC<OnboardingPageProps> = ({
                       type="checkbox"
                       checked={formData.communicationMethods.includes(method)}
                       onChange={(e) => handleCommunicationMethodChange(method, e.target.checked)}
-                      className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                      className="checkbox-brand"
                     />
                     <span className="text-sm text-gray-700">{method}</span>
                   </label>
@@ -786,7 +798,7 @@ const OnboardingPage: React.FC<OnboardingPageProps> = ({
                       type="checkbox"
                       checked={formData.cfoSupportAreas.includes(area)}
                       onChange={(e) => handleCfoSupportAreaChange(area, e.target.checked)}
-                      className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                      className="checkbox-brand"
                     />
                     <span className="text-sm text-gray-700">{area}</span>
                   </label>
@@ -921,7 +933,7 @@ const OnboardingPage: React.FC<OnboardingPageProps> = ({
                         type="checkbox"
                         checked={formData.certifications.includes(certification)}
                         onChange={(e) => handleCertificationChange(certification, e.target.checked)}
-                        className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                        className="checkbox-brand"
                       />
                       <span className="text-sm text-gray-700">{certification}</span>
                     </label>
@@ -1020,7 +1032,7 @@ const OnboardingPage: React.FC<OnboardingPageProps> = ({
                       type="checkbox"
                       checked={formData.areasOfExpertise.includes(area)}
                       onChange={(e) => handleExpertiseAreaChange(area, e.target.checked)}
-                      className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                      className="checkbox-brand"
                     />
                     <span className="text-sm text-gray-700">{area}</span>
                   </label>
@@ -1056,7 +1068,7 @@ const OnboardingPage: React.FC<OnboardingPageProps> = ({
                       type="checkbox"
                       checked={formData.industriesWorked.includes(industry)}
                       onChange={(e) => handleIndustryChange(industry, e.target.checked)}
-                      className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                      className="checkbox-brand"
                     />
                     <span className="text-sm text-gray-700">{industry}</span>
                   </label>
@@ -1163,7 +1175,7 @@ const OnboardingPage: React.FC<OnboardingPageProps> = ({
   return (
     <div className="min-h-screen flex">
       {/* Left Sidebar */}
-      <div className="w-1/3 bg-primary-600 text-white p-8 flex flex-col">
+      <div className="bg-primary-600 text-white p-8 flex flex-col" style={{ width: '456px' }}>
         {/* Logo */}
         <div className="mb-12">
           <div className="w-32 h-8">

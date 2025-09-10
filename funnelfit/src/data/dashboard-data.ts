@@ -81,6 +81,71 @@ export interface RevenueData {
   year: number
 }
 
+export interface Project {
+  id: string
+  name: string
+  description: string
+  clientId: string
+  clientName: string
+  clientAvatar: string
+  clientColor: string
+  status: 'planning' | 'active' | 'on_hold' | 'completed' | 'cancelled'
+  priority: 'urgent' | 'high' | 'medium' | 'low'
+  startDate: string
+  endDate: string
+  budget: number
+  spent: number
+  progress: number
+  teamMembers: string[]
+  tags: string[]
+  type: 'consulting' | 'audit' | 'advisory' | 'implementation'
+}
+
+export interface Task {
+  id: string
+  title: string
+  description: string
+  projectId: string
+  projectName: string
+  clientId: string
+  clientName: string
+  clientAvatar: string
+  clientColor: string
+  assignedTo: string
+  assignedBy: string
+  status: 'todo' | 'in_progress' | 'review' | 'completed' | 'blocked'
+  priority: 'urgent' | 'high' | 'medium' | 'low'
+  type: 'analysis' | 'meeting' | 'document' | 'review' | 'presentation' | 'research'
+  createdDate: string
+  dueDate: string
+  completedDate?: string
+  estimatedHours: number
+  actualHours: number
+  tags: string[]
+  attachments: string[]
+  comments: TaskComment[]
+  dependencies: string[]
+  subtasks: SubTask[]
+}
+
+export interface TaskComment {
+  id: string
+  taskId: string
+  author: string
+  authorAvatar: string
+  content: string
+  timestamp: string
+  type: 'comment' | 'status_change' | 'assignment'
+}
+
+export interface SubTask {
+  id: string
+  title: string
+  completed: boolean
+  assignedTo?: string
+  dueDate?: string
+}
+
 // Mock data
 export const dashboardMetrics: DashboardMetrics = {
   monthlyRevenue: {
@@ -364,4 +429,276 @@ export const getStatusColor = (status: Client['status']): string => {
     churned: 'bg-red-100 text-red-800'
   }
   return colors[status] || colors.pending
+}
+
+// Projects and Tasks Mock Data
+export const projects: Project[] = [
+  {
+    id: 'proj-1',
+    name: 'Financial Restructuring',
+    description: 'Complete financial analysis and restructuring plan for TechStart Solutions',
+    clientId: 'tech-start',
+    clientName: 'TechStart Solutions',
+    clientAvatar: 'TS',
+    clientColor: 'bg-blue-500',
+    status: 'active',
+    priority: 'high',
+    startDate: '2024-11-01',
+    endDate: '2024-12-31',
+    budget: 5000000,
+    spent: 3200000,
+    progress: 65,
+    teamMembers: ['CFO', 'Senior Analyst', 'Junior Analyst'],
+    tags: ['Financial Analysis', 'Restructuring', 'Strategic Planning'],
+    type: 'consulting'
+  },
+  {
+    id: 'proj-2',
+    name: 'Sustainability Audit',
+    description: 'Environmental and financial sustainability assessment',
+    clientId: 'green-earth',
+    clientName: 'Green Earth Co.',
+    clientAvatar: 'GE',
+    clientColor: 'bg-green-500',
+    status: 'active',
+    priority: 'medium',
+    startDate: '2024-10-15',
+    endDate: '2024-12-20',
+    budget: 3500000,
+    spent: 1800000,
+    progress: 45,
+    teamMembers: ['CFO', 'Environmental Specialist'],
+    tags: ['Audit', 'Sustainability', 'Compliance'],
+    type: 'audit'
+  },
+  {
+    id: 'proj-3',
+    name: 'Healthcare Financial Advisory',
+    description: 'Strategic financial advisory for healthcare expansion',
+    clientId: 'medflow',
+    clientName: 'MedFlow Inc.',
+    clientAvatar: 'MF',
+    clientColor: 'bg-purple-500',
+    status: 'planning',
+    priority: 'medium',
+    startDate: '2024-12-01',
+    endDate: '2025-02-28',
+    budget: 4200000,
+    spent: 0,
+    progress: 10,
+    teamMembers: ['CFO', 'Healthcare Specialist'],
+    tags: ['Advisory', 'Healthcare', 'Expansion'],
+    type: 'advisory'
+  }
+]
+
+export const tasks: Task[] = [
+  {
+    id: 'task-1',
+    title: 'Financial Statement Analysis',
+    description: 'Analyze Q3 financial statements and identify key areas for improvement',
+    projectId: 'proj-1',
+    projectName: 'Financial Restructuring',
+    clientId: 'tech-start',
+    clientName: 'TechStart Solutions',
+    clientAvatar: 'TS',
+    clientColor: 'bg-blue-500',
+    assignedTo: 'Senior Analyst',
+    assignedBy: 'CFO',
+    status: 'in_progress',
+    priority: 'high',
+    type: 'analysis',
+    createdDate: '2024-11-01',
+    dueDate: '2024-12-15',
+    estimatedHours: 16,
+    actualHours: 12,
+    tags: ['Financial Analysis', 'Q3 Review'],
+    attachments: ['financial_statements_q3.pdf'],
+    comments: [
+      {
+        id: 'comment-1',
+        taskId: 'task-1',
+        author: 'CFO',
+        authorAvatar: 'CF',
+        content: 'Please focus on cash flow analysis first',
+        timestamp: '2024-11-05 10:30',
+        type: 'comment'
+      }
+    ],
+    dependencies: [],
+    subtasks: [
+      {
+        id: 'subtask-1',
+        title: 'Review cash flow statements',
+        completed: true,
+        assignedTo: 'Senior Analyst',
+        dueDate: '2024-11-10'
+      },
+      {
+        id: 'subtask-2',
+        title: 'Analyze profit margins',
+        completed: false,
+        assignedTo: 'Senior Analyst',
+        dueDate: '2024-11-15'
+      }
+    ]
+  },
+  {
+    id: 'task-2',
+    title: 'Client Meeting Preparation',
+    description: 'Prepare presentation materials for client review meeting',
+    projectId: 'proj-1',
+    projectName: 'Financial Restructuring',
+    clientId: 'tech-start',
+    clientName: 'TechStart Solutions',
+    clientAvatar: 'TS',
+    clientColor: 'bg-blue-500',
+    assignedTo: 'CFO',
+    assignedBy: 'CFO',
+    status: 'todo',
+    priority: 'urgent',
+    type: 'presentation',
+    createdDate: '2024-11-10',
+    dueDate: '2024-12-12',
+    estimatedHours: 8,
+    actualHours: 0,
+    tags: ['Presentation', 'Client Meeting'],
+    attachments: [],
+    comments: [],
+    dependencies: ['task-1'],
+    subtasks: [
+      {
+        id: 'subtask-3',
+        title: 'Create executive summary',
+        completed: false,
+        assignedTo: 'CFO'
+      },
+      {
+        id: 'subtask-4',
+        title: 'Prepare financial charts',
+        completed: false,
+        assignedTo: 'CFO'
+      }
+    ]
+  },
+  {
+    id: 'task-3',
+    title: 'Environmental Impact Assessment',
+    description: 'Conduct comprehensive environmental impact assessment',
+    projectId: 'proj-2',
+    projectName: 'Sustainability Audit',
+    clientId: 'green-earth',
+    clientName: 'Green Earth Co.',
+    clientAvatar: 'GE',
+    clientColor: 'bg-green-500',
+    assignedTo: 'Environmental Specialist',
+    assignedBy: 'CFO',
+    status: 'review',
+    priority: 'medium',
+    type: 'research',
+    createdDate: '2024-10-15',
+    dueDate: '2024-12-01',
+    estimatedHours: 24,
+    actualHours: 20,
+    tags: ['Environmental', 'Assessment', 'Sustainability'],
+    attachments: ['environmental_data.xlsx', 'impact_report_draft.pdf'],
+    comments: [
+      {
+        id: 'comment-2',
+        taskId: 'task-3',
+        author: 'CFO',
+        authorAvatar: 'CF',
+        content: 'Great progress! Please include carbon footprint analysis',
+        timestamp: '2024-11-08 14:20',
+        type: 'comment'
+      }
+    ],
+    dependencies: [],
+    subtasks: [
+      {
+        id: 'subtask-5',
+        title: 'Data collection',
+        completed: true,
+        assignedTo: 'Environmental Specialist'
+      },
+      {
+        id: 'subtask-6',
+        title: 'Impact analysis',
+        completed: true,
+        assignedTo: 'Environmental Specialist'
+      },
+      {
+        id: 'subtask-7',
+        title: 'Report writing',
+        completed: false,
+        assignedTo: 'Environmental Specialist'
+      }
+    ]
+  }
+]
+
+// Helper functions for projects and tasks
+export const getProjectById = (id: string): Project | undefined => {
+  return projects.find(project => project.id === id)
+}
+
+export const getTaskById = (id: string): Task | undefined => {
+  return tasks.find(task => task.id === id)
+}
+
+export const getTasksByProject = (projectId: string): Task[] => {
+  return tasks.filter(task => task.projectId === projectId)
+}
+
+export const getTasksByStatus = (status: Task['status']): Task[] => {
+  return tasks.filter(task => task.status === status)
+}
+
+export const getTasksByPriority = (priority: Task['priority']): Task[] => {
+  return tasks.filter(task => task.priority === priority)
+}
+
+export const getProjectsByClient = (clientId?: string): Project[] | { client: Client, projects: Project[] }[] => {
+  if (clientId) {
+    return projects.filter(project => project.clientId === clientId)
+  }
+  
+  // Group all projects by client
+  const clientGroups: { client: Client, projects: Project[] }[] = []
+  const processedClients = new Set<string>()
+  
+  projects.forEach(project => {
+    if (!processedClients.has(project.clientId)) {
+      const client = getClientById(project.clientId)
+      if (client) {
+        const clientProjects = projects.filter(p => p.clientId === project.clientId)
+        clientGroups.push({ client, projects: clientProjects })
+        processedClients.add(project.clientId)
+      }
+    }
+  })
+  
+  return clientGroups
+}
+
+export const getTaskStatusColor = (status: Task['status']): string => {
+  switch (status) {
+    case 'todo': return 'text-gray-600 bg-gray-50'
+    case 'in_progress': return 'text-blue-600 bg-blue-50'
+    case 'review': return 'text-yellow-600 bg-yellow-50'
+    case 'completed': return 'text-green-600 bg-green-50'
+    case 'blocked': return 'text-red-600 bg-red-50'
+    default: return 'text-gray-600 bg-gray-50'
+  }
+}
+
+export const getProjectStatusColor = (status: Project['status']): string => {
+  switch (status) {
+    case 'planning': return 'text-purple-600 bg-purple-50'
+    case 'active': return 'text-green-600 bg-green-50'
+    case 'on_hold': return 'text-yellow-600 bg-yellow-50'
+    case 'completed': return 'text-blue-600 bg-blue-50'
+    case 'cancelled': return 'text-red-600 bg-red-50'
+    default: return 'text-gray-600 bg-gray-50'
+  }
 }

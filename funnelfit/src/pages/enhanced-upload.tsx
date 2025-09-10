@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react'
-import { Button, Card, CardContent } from '../components/ui'
+import { Button, Card, CardContent, Select } from '../components/ui'
+import { formatDate } from '../utils/dateUtils'
 import { 
   ArrowLeftIcon,
   FileTextIcon,
@@ -164,18 +165,18 @@ const EnhancedUploadPage: React.FC<EnhancedUploadPageProps> = ({
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Document Type
               </label>
-              <select
+              <Select
                 value={selectedDocumentType}
-                onChange={(e) => setSelectedDocumentType(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
-              >
-                <option value="">Select document type...</option>
-                {documentTypes.map((type) => (
-                  <option key={type.id} value={type.id}>
-                    {type.name}
-                  </option>
-                ))}
-              </select>
+                onChange={(value) => setSelectedDocumentType(value)}
+                options={[
+                  { value: '', label: 'Select document type...' },
+                  ...documentTypes.map((type) => ({
+                    value: type.id,
+                    label: type.name
+                  }))
+                ]}
+                placeholder="Select document type..."
+              />
             </div>
 
             {/* File Upload Area */}
@@ -282,7 +283,7 @@ const EnhancedUploadPage: React.FC<EnhancedUploadPageProps> = ({
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-500">Upload Date</label>
-                <p className="text-gray-900">{new Date().toLocaleDateString()}</p>
+                <p className="text-gray-900">{formatDate(new Date().toISOString())}</p>
               </div>
             </div>
           </CardContent>

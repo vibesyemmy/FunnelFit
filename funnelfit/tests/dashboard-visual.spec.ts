@@ -158,3 +158,4 @@ test.describe('FunnelFit Dashboard Visual Tests', () => {
     await page.locator('nav').screenshot({ path: 'test-results/navigation.png' });
   });
 });
+
